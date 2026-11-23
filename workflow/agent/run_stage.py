@@ -227,6 +227,14 @@ def stage_develop(repo_root, state, issue):
                             f"developer blocked: {result.get('reason')}",
                             transcript)
             changed = git_changed_files(repo_root)
+            # A successful import of unchanged code is not implementation.
+            source_diff = subprocess.run(
+                ["git", "diff", "origin/main", "--", "tinydb"],
+                cwd=repo_root, capture_output=True, text=True, check=True).stdout
+            if not source_diff.strip():
+                return fail(repo_root, state, "implementation",
+                            "no source change under tinydb compared with main; "
+                            "build of unchanged code is insufficient", transcript)
             ok, msg = checks.check_build(repo_root, changed)
             if not ok:
                 feedback = f"The code does not build:\n{msg}"
@@ -247,7 +255,11 @@ def stage_develop(repo_root, state, issue):
         task = ("Write tests for this specification's acceptance criteria and "
                 "run the full suite.\n\n"
                 f"--- acceptance criteria (from spec.md) ---\n{spec}\n\n"
-                f"--- the change under test (diff) ---\n{diff[:20000]}\n")
+                f"--- the change under test (diff) ---\n{diff[:20000]}\n"
+                "If tests_autose already exists after a failed attempt, inspect "
+                "and retain useful existing tests. Check every acceptance "
+                "criterion, add missing tests, run the suite, then finish. "
+                "Existing files are not proof that the tests pass.")
         result, transcript, err = agent.run_agent(
             "Tester", config.MODEL_TEST, prompts.TEST_SYSTEM, task, repo_root,
             usage)
@@ -281,6 +293,12 @@ def stage_develop(repo_root, state, issue):
         write_artifact(repo_root, "test_report.md", report)
         write_artifact(repo_root, "pytest_full_output.txt", full_out)
         if ok:
+            baseline_ok, baseline_out = checks.baseline_regression_check(repo_root, test_files)
+            write_artifact(repo_root, "baseline_regression_output.txt", baseline_out)
+            if not baseline_ok:
+                return fail(repo_root, state, "testing",
+                            "new tests did not demonstrate behavioral failure on main baseline; "
+                            "see baseline_regression_output.txt", transcript)
             controller.set_stage(state, "testing", "passed",
                                  artifact=os.path.join(config.ARTIFACTS_DIR,
                                                        "test_report.md"))

@@ -22,7 +22,7 @@ MAX_AGENT_STEPS = int(os.environ.get("MAX_AGENT_STEPS", "40"))
 MAX_TOKENS_PER_RUN = int(os.environ.get("MAX_TOKENS_PER_RUN", "1500000"))
 MAX_FIX_CYCLES = int(os.environ.get("MAX_FIX_CYCLES", "3"))
 MAX_REVIEW_ROUNDS = int(os.environ.get("MAX_REVIEW_ROUNDS", "2"))
-MAX_OUTPUT_TOKENS = int(os.environ.get("MAX_OUTPUT_TOKENS", "8192"))
+MAX_OUTPUT_TOKENS = int(os.environ.get("MAX_OUTPUT_TOKENS", "4096"))
 
 # --- Retry/backoff for the model API ---
 API_RETRIES = 2
