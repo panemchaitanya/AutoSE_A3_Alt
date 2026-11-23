@@ -107,15 +107,31 @@
       "ts": "2026-11-23T17:30:13.106590+00:00"
     },
     {
-      "ts": "2026-11-23T17:30:22.817085+00:00",
+      "event": "Full A1 validation required; downstream checkpoints invalidated",
+      "ts": "2026-11-23T17:30:22.817085+00:00"
+    },
+    {
+      "event": "requirements -> running",
+      "ts": "2026-11-23T17:30:22.817100+00:00"
+    },
+    {
+      "event": "requirements -> failed (agent error: model retries exhausted; last error type=_Transient: Gemini API error 503: {\n  \"error\": {\n    \"code\": 503,\n    \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\",\n    \"status\": \"UNAVAILABLE\"\n  }\n}\n)",
+      "ts": "2026-11-23T17:31:39.334424+00:00"
+    },
+    {
+      "event": "operational recovery: no reviewer verdict exists",
+      "ts": "2026-11-23T18:06:57.007484+00:00"
+    },
+    {
+      "ts": "2026-11-23T18:07:05.709669+00:00",
       "event": "Full A1 validation required; downstream checkpoints invalidated"
     },
     {
-      "ts": "2026-11-23T17:30:22.817100+00:00",
+      "ts": "2026-11-23T18:07:05.709682+00:00",
       "event": "requirements -> running"
     },
     {
-      "ts": "2026-11-23T17:31:39.334424+00:00",
+      "ts": "2026-11-23T18:07:59.031121+00:00",
       "event": "requirements -> failed (agent error: model retries exhausted; last error type=_Transient: Gemini API error 503: {\n  \"error\": {\n    \"code\": 503,\n    \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\",\n    \"status\": \"UNAVAILABLE\"\n  }\n}\n)"
     }
   ],
@@ -145,13 +161,13 @@
     }
   },
   "usage": {
-    "prompt_tokens": 334705,
-    "completion_tokens": 11185,
-    "total_tokens": 345890,
-    "calls": 38,
+    "prompt_tokens": 340638,
+    "completion_tokens": 11204,
+    "total_tokens": 351842,
+    "calls": 39,
     "fallbacks": 0,
     "models": {
-      "gemini-3.5-flash-lite": 3
+      "gemini-3.5-flash-lite": 4
     }
   }
 }
