@@ -1,0 +1,29 @@
+1
+00:00:00,000 --> 00:00:09,000
+Live GitHub issue #3: search(limit=...).
+Recorded 23 Nov 2026. Historical-evidence walkthrough.
+
+2
+00:00:09,000 --> 00:00:21,000
+Issue timeline: generated commits and PR #8.
+Multiple recovery attempts, not one continuous run.
+
+3
+00:00:21,000 --> 00:00:39,000
+Historical workflow and release: real completed jobs.
+Full corrected A1 requirements were NOT established.
+
+4
+00:00:39,000 --> 00:01:00,000
+Open PR #8 and historical review evidence.
+Review was not fully independent: README leaked reasoning.
+
+5
+00:01:00,000 --> 00:01:09,000
+Submission repo Actions: real failures remain visible.
+No corrected-compliant end-to-end outcome yet.
+
+6
+00:01:09,000 --> 00:01:16,000
+Submission repository: workflow, report and evidence.
+INCOMPLETE. This is not proof of a successful rerun.
