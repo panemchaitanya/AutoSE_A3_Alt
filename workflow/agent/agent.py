@@ -171,6 +171,14 @@ def run_agent(role, model, system_prompt, task, repo_root, usage,
             json.dump({"transcript": transcript, "usage": usage.as_dict()}, progress)
         if kind == "finish":
             result = action.get("result")
+            if role == "Developer" and isinstance(result, dict) and not result.get("blocked"):
+                if not result.get("files_changed"):
+                    contents.append({"role":"user","parts":[{"text":
+                        "Finish rejected: no changed files reported. Implement the design, "
+                        "edit source using write_file or a short Python command, verify "
+                        "the source diff and build, then finish with files_changed. "
+                        "Do not merely inspect status."}]})
+                    continue
             if not isinstance(result, dict):
                 contents.append({"role": "user", "parts": [{"text":
                     "OBSERVATION: finish requires \"result\" as a JSON object."}]})

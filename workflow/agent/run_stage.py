@@ -211,6 +211,14 @@ def stage_develop(repo_root, state, issue):
             task = ("Implement this design.\n\n"
                     f"--- design.md ---\n{design}\n\n"
                     f"--- acceptance criteria (from spec.md) ---\n{spec}\n")
+            prior_reason = state["stages"]["implementation"].get("reason")
+            if prior_reason:
+                task += "\nPREVIOUS IMPLEMENTATION FAILURE: " + prior_reason
+            task += ("\nYou must actually change source to implement the design. "
+                     "A status check is not completion. Do not finish with an "
+                     "empty files_changed list. Use a short Python editing command "
+                     "if writing an entire large source file would be wasteful. "
+                     "Preserve unrelated code and verify the resulting diff.")
             if feedback:
                 task += ("\n--- PREVIOUS ATTEMPT FAILED TESTING - fix it ---\n"
                          + feedback)
@@ -293,6 +301,12 @@ def stage_develop(repo_root, state, issue):
         write_artifact(repo_root, "test_report.md", report)
         write_artifact(repo_root, "pytest_full_output.txt", full_out)
         if ok:
+            baseline_ok, baseline_out = checks.baseline_regression_check(repo_root, test_files)
+            write_artifact(repo_root, "baseline_regression_output.txt", baseline_out)
+            if not baseline_ok:
+                return fail(repo_root, state, "testing",
+                            "new tests did not demonstrate behavioral failure on main baseline; "
+                            "see baseline_regression_output.txt", transcript)
             controller.set_stage(state, "testing", "passed",
                                  artifact=os.path.join(config.ARTIFACTS_DIR,
                                                        "test_report.md"))
