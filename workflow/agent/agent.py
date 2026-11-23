@@ -130,11 +130,14 @@ def _tool_run_shell(repo_root, command):
 
 
 def run_agent(role, model, system_prompt, task, repo_root, usage,
-              read_only=False, extra_context=None):
+              read_only=False, extra_context=None, stage=None):
     """Run the loop. Returns (result_dict, transcript list, error_or_None).
 
     read_only=True removes write_file (used for the Reviewer - ADR-008).
+    stage names the pipeline stage for per-call provenance logging.
     """
+    call_context = {"role": role, "stage": stage, "repo_root": repo_root,
+                    "task_sha256": hashlib.sha256(task.encode()).hexdigest()}
     contents = []
     if extra_context:
         contents.append({"role": "user", "parts": [{"text": extra_context}]})
@@ -201,7 +204,8 @@ def run_agent(role, model, system_prompt, task, repo_root, usage,
                     "\nAvoid rereading the same ranges. After enough inspection, implement "
                     "the design. Saved files are durable. Current step " + str(step) +
                     " of " + str(config.MAX_AGENT_STEPS) + "."}]}]
-            reply = gemini.generate(model, system_prompt, sent, usage)
+            reply = gemini.generate(model, system_prompt, sent, usage,
+                                    context=call_context)
         except (gemini.BudgetExhausted, gemini.QuotaExhausted) as e:
             return None, transcript, str(e)
         contents.append({"role": "model", "parts": [{"text": reply}]})

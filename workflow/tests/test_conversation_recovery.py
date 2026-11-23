@@ -18,7 +18,7 @@ class ConversationRecovery(unittest.TestCase):
   self.assertIsNone(result);self.assertIn('503',error)
   saved=self.root/'.autose/artifacts/conversation_specwriter.json'
   self.assertEqual(json.loads(saved.read_text())['next_step'],1)
-  def recovered(model,system,contents,usage):
+  def recovered(model,system,contents,usage,**_kw):
    self.assertTrue(any('value=1' in p.get('text','') for c in contents for p in c['parts']))
    return json.dumps({'action':'finish','result':{'summary':'resumed'}})
   with patch.object(agent.gemini,'generate',side_effect=recovered),patch.object(agent,'_tool_read_file',side_effect=AssertionError('must not repeat')):
@@ -26,7 +26,7 @@ class ConversationRecovery(unittest.TestCase):
   self.assertIsNone(error);self.assertEqual(result['summary'],'resumed');self.assertEqual(len(transcript),2);self.assertFalse(saved.exists())
  def test_changed_task_invalidates_saved_conversation(self):
   with patch.object(agent.gemini,'generate',side_effect=[json.dumps({'action':'read_file','path':'tinydb/a.py'}),gemini.QuotaExhausted('503')]):self.run_role()
-  def changed(model,system,contents,usage):
+  def changed(model,system,contents,usage,**_kw):
    self.assertEqual(contents,[{'role':'user','parts':[{'text':'new task'}]}])
    return json.dumps({'action':'finish','result':{}})
   with patch.object(agent.gemini,'generate',side_effect=changed):self.run_role(task='new task')

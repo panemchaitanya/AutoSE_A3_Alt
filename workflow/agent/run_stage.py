@@ -11,6 +11,7 @@ stage's artifact and in state.json (ADR-002, ADR-004).
 """
 
 import argparse
+import hashlib
 import json
 import os
 import subprocess
@@ -22,6 +23,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import agent
 import checks
+import call_log
 import a1_checks
 import config
 import controller
@@ -65,15 +67,17 @@ def make_diff(repo_root, base_ref=None):
     return proc.stdout
 
 
-def judge(repo_root, usage, question, document):
+def judge(repo_root, usage, question, document, stage=None):
     """Advisory LLM judge for the two semantic checks (ADR-007)."""
     task = (f"Property to verify: {question}\n\n"
             f"Document under review:\n```markdown\n{document}\n```\n\n"
             f"Answer with one JSON object.")
+    context = {"role": "Judge", "stage": stage, "repo_root": repo_root,
+               "task_sha256": hashlib.sha256(task.encode()).hexdigest()}
     try:
         reply = gemini.generate(config.MODEL_JUDGE, prompts.JUDGE_SYSTEM,
                                 [{"role": "user", "parts": [{"text": task}]}],
-                                usage)
+                                usage, context=context)
     except Exception as e:  # a judge outage must not pass a stage
         return False, f"judge unavailable: {e}"
     try:
@@ -115,7 +119,8 @@ def stage_requirements(repo_root, state, issue):
     original_task = task
     for attempt in (1, 2):
         result, transcript, err = agent.run_agent(
-            "SpecWriter", config.MODEL_SPEC, system, task, repo_root, usage)
+            "SpecWriter", config.MODEL_SPEC, system, task, repo_root, usage,
+            stage=stage)
         store_usage(state, usage)
         if err:
             return fail(repo_root, state, stage,
@@ -141,7 +146,7 @@ def stage_requirements(repo_root, state, issue):
             "counts, tool outcomes and human next steps. Missing tools must remain explicit. "
             "Reject unsupported readiness or superficial PASS claims. An honest NOT READY "
             "verdict can meet documentation integrity if uncertainty is kept explicit.",
-            "\n\n".join(k+":\n"+v for k,v in adocs.items())) if aok else (False, 'A1 structural checks failed')
+            "\n\n".join(k+":\n"+v for k,v in adocs.items()), stage=stage) if aok else (False, 'A1 structural checks failed')
         if not ajok:
             ok = False
             problems.append('A1 semantic validation: ' + ajreason)
@@ -149,7 +154,7 @@ def stage_requirements(repo_root, state, issue):
                              "Every acceptance criterion in this spec is "
                              "testable: a developer who did not write it can "
                              "turn it into a pass/fail test.",
-                             spec)
+                             spec, stage=stage)
         store_usage(state, usage)
         if ok and jok:
             state["a1_bundle_verified"] = True
@@ -187,7 +192,8 @@ def stage_design(repo_root, state, issue):
     original_task = task
     for attempt in (1, 2):
         result, transcript, err = agent.run_agent(
-            "Designer", config.MODEL_DESIGN, system, task, repo_root, usage)
+            "Designer", config.MODEL_DESIGN, system, task, repo_root, usage,
+            stage=stage)
         store_usage(state, usage)
         if err:
             return fail(repo_root, state, stage, f"agent error: {err}",
@@ -203,7 +209,7 @@ def stage_design(repo_root, state, issue):
                              "This design names the concrete files and "
                              "functions to change and respects the "
                              "architecture constraints it cites.",
-                             design)
+                             design, stage=stage)
         store_usage(state, usage)
         if ok and jok:
             write_transcript(repo_root, stage, transcript)
@@ -251,7 +257,7 @@ def stage_develop(repo_root, state, issue):
                          + feedback)
             result, transcript, err = agent.run_agent(
                 "Developer", config.MODEL_DEVELOP, prompts.DEVELOP_SYSTEM,
-                task, repo_root, usage)
+                task, repo_root, usage, stage="implementation")
             store_usage(state, usage)
             write_transcript(repo_root, "implementation", transcript)
             if err:
@@ -297,7 +303,7 @@ def stage_develop(repo_root, state, issue):
                 "Existing files are not proof that the tests pass.")
         result, transcript, err = agent.run_agent(
             "Tester", config.MODEL_TEST, prompts.TEST_SYSTEM, task, repo_root,
-            usage)
+            usage, stage="testing")
         store_usage(state, usage)
         write_transcript(repo_root, "testing", transcript)
         if err:
@@ -391,9 +397,13 @@ def stage_review(repo_root, state, issue, pr_number):
             ".git", ".autose", "experiment", "results", "workflow",
             "architecture", ".github", "report.pdf", "demo.mp4", "README.md",
             "__pycache__", ".pytest_cache"))
-        result, transcript, err = agent.run_agent(
-            "Reviewer", config.MODEL_REVIEW, prompts.REVIEW_SYSTEM, task,
-            review_root, usage, read_only=True)
+        try:
+            result, transcript, err = agent.run_agent(
+                "Reviewer", config.MODEL_REVIEW, prompts.REVIEW_SYSTEM, task,
+                review_root, usage, read_only=True, stage=stage)
+        finally:
+            # Preserve partial and failed review attempts before cleanup too.
+            call_log.merge_into(review_root, repo_root)
     store_usage(state, usage)
     write_transcript(repo_root, stage, transcript)
     if err:

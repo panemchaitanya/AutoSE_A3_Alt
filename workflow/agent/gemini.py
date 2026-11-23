@@ -17,6 +17,7 @@ import urllib.error
 import urllib.request
 
 import config
+import call_log
 
 API_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
 _LAST_REQUEST = 0.0
@@ -79,13 +80,21 @@ def _post(model, payload, api_key):
     except urllib.error.HTTPError as e:
         body = e.read().decode("utf-8", "replace")[:500]
         if e.code == 429:
-            raise _RateLimited(body)
+            err = _RateLimited(body)
+            err.http_status = 429
+            raise err
         if 500 <= e.code < 600:
-            raise _Transient(f"Gemini API error {e.code}: {body}")
-        raise RuntimeError(f"Gemini API error {e.code}: {body}")
+            err = _Transient(f"Gemini API error {e.code}: {body}")
+            err.http_status = e.code
+            raise err
+        err = RuntimeError(f"Gemini API error {e.code}: {body}")
+        err.http_status = e.code
+        raise err
     except (TimeoutError, ConnectionError, urllib.error.URLError,
             http.client.RemoteDisconnected) as e:
-        raise _Transient(f"transport failure: {type(e).__name__}: {e}") from e
+        err = _Transient(f"transport failure: {type(e).__name__}: {e}")
+        err.category = "transport"
+        raise err from e
 
 
 class _RateLimited(Exception):
@@ -146,10 +155,13 @@ def response_schema(system_prompt):
 
 
 
-def generate(model, system_prompt, contents, usage, temperature=0.2):
+def generate(model, system_prompt, contents, usage, temperature=0.2,
+             context=None):
     """One generateContent call with retries, fallback and budget checks.
 
     contents: list of {"role": "user"|"model", "parts": [{"text": ...}]}
+    context: optional provenance dict (role, stage, repo_root, task) -
+    every HTTP attempt is logged through call_log (schema autose-call/1).
     Returns the reply text. Raises BudgetExhausted / QuotaExhausted.
     """
     if usage.total_tokens >= config.MAX_TOKENS_PER_RUN:
@@ -161,6 +173,19 @@ def generate(model, system_prompt, contents, usage, temperature=0.2):
     if not api_key:
         raise RuntimeError("GEMINI_API_KEY is not set")
 
+    context = dict(context or {})
+    context.setdefault("system_sha256", call_log.sha256_text(system_prompt))
+    if "task_sha256" not in context:
+        first = ""
+        for entry in contents:
+            if entry.get("role") == "user":
+                first = "".join(p.get("text", "")
+                                for p in entry.get("parts", []))
+                break
+        context["task_sha256"] = call_log.sha256_text(first)
+
+    context["request_contents_sha256"] = call_log.sha256_text(
+        json.dumps(contents, sort_keys=True, separators=(",", ":")))
     payload = {
         "system_instruction": {"parts": [{"text": system_prompt}]},
         "contents": contents,
@@ -191,25 +216,64 @@ def generate(model, system_prompt, contents, usage, temperature=0.2):
                     usage.fallbacks += 1
                 candidates = data.get("candidates") or []
                 if not candidates:
-                    raise _Transient(
-                        f"Gemini returned no candidates: {str(data)[:300]}"
-                    )
+                    # Preserve every fact the provider did return (usage,
+                    # model version, response id) even though the call is
+                    # unusable; then record the failure category only.
+                    call_log.record(
+                        context, model, active_model, "error",
+                        usage_metadata=data.get("usageMetadata") or None,
+                        provider_model_version=data.get("modelVersion"),
+                        response_id=data.get("responseId"),
+                        error={"category": "no_candidates",
+                               "http_status": None, "finish_reason": None})
+                    err = _Transient("Gemini returned no candidates")
+                    err.category = "no_candidates"
+                    err._logged = True
+                    raise err
                 parts = candidates[0].get("content", {}).get("parts", [])
                 text = "".join(p.get("text", "") for p in parts)
                 if not text.strip():
                     finish_reason = candidates[0].get("finishReason", "unknown")
-                    raise _Transient(
-                        f"empty model reply (finishReason={finish_reason})"
-                    )
+                    call_log.record(
+                        context, model, active_model, "error",
+                        usage_metadata=data.get("usageMetadata") or None,
+                        provider_model_version=data.get("modelVersion"),
+                        response_id=data.get("responseId"),
+                        error={"category": "empty_reply",
+                               "http_status": None,
+                               "finish_reason": finish_reason})
+                    err = _Transient("empty model reply")
+                    err.category = "empty_reply"
+                    err._logged = True
+                    raise err
+                call_log.record(
+                    context, model, active_model, "success",
+                    usage_metadata=data.get("usageMetadata") or None,
+                    provider_model_version=data.get("modelVersion"),
+                    response_id=data.get("responseId"))
                 return text
             except (_RateLimited, _Transient) as e:
                 last_err = e
+                if not getattr(e, "_logged", False):
+                    call_log.record(
+                        context, model, active_model, "error",
+                        usage_metadata=None,
+                        error=call_log.categorize_error(e))
                 if attempt < config.API_RETRIES:
                     time.sleep(
                         config.API_BACKOFF_SECONDS[
                             min(attempt, len(config.API_BACKOFF_SECONDS) - 1)
                         ]
                     )
+            except Exception as e:
+                # Non-retryable failures (client-error HTTP, decode errors,
+                # anything else) are still attempts: record the category,
+                # then keep the original control flow.
+                call_log.record(
+                    context, model, active_model, "error",
+                    usage_metadata=None,
+                    error=call_log.categorize_error(e))
+                raise
         # primary exhausted its retries: fall through to the fallback tier
     raise QuotaExhausted(
         f"model retries exhausted; last error type={type(last_err).__name__}: {last_err}"

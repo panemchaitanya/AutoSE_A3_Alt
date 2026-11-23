@@ -87,7 +87,7 @@ jobs:
             --jq '{number: .number, title: .title, body: (.body // "")}' > .autose/issue.json
           # Run trusted harness code from main, not executable code from the PR.
           mkdir -p /tmp/autose-trusted-review
-          for FILE in a1_checks.py agent.py checks.py config.py controller.py gemini.py prompts.py review_feedback.py run_stage.py; do
+          for FILE in a1_checks.py agent.py call_log.py checks.py config.py controller.py gemini.py prompts.py review_feedback.py run_stage.py; do
             git show "origin/main:workflow/agent/$FILE" > "/tmp/autose-trusted-review/$FILE"
           done
           python /tmp/autose-trusted-review/run_stage.py --stage review --repo . \
