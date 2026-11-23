@@ -22,6 +22,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import agent
 import checks
+import a1_checks
 import config
 import controller
 import gemini
@@ -66,7 +67,7 @@ def make_diff(repo_root, base_ref=None):
 def judge(repo_root, usage, question, document):
     """Advisory LLM judge for the two semantic checks (ADR-007)."""
     task = (f"Property to verify: {question}\n\n"
-            f"Document under review:\n```markdown\n{document[:20000]}\n```\n\n"
+            f"Document under review:\n```markdown\n{document}\n```\n\n"
             f"Answer with one JSON object.")
     try:
         reply = gemini.generate(config.MODEL_JUDGE, prompts.JUDGE_SYSTEM,
@@ -93,9 +94,14 @@ def store_usage(state, usage):
 # ---------------------------------------------------------------- stage 1
 def stage_requirements(repo_root, state, issue):
     stage = "requirements"
-    if state["stages"][stage]["status"] == "passed":
-        print(f"[{stage}] already passed, skipping")
+    if state["stages"][stage]["status"] == "passed" and state.get("a1_bundle_verified"):
+        print(f"[{stage}] already passed with verified A1 bundle, skipping")
         return True
+    # A corrected requirements contract invalidates dependent checkpoints.
+    if not state.get("a1_bundle_verified"):
+        for dependent in ("design", "implementation", "testing", "release", "review"):
+            state["stages"][dependent] = {"status": "pending"}
+        controller.record(state, "Full A1 validation required; downstream checkpoints invalidated")
     controller.set_stage(state, stage, "running")
     usage = load_usage(state)
     skill = prompts.load_skill(repo_root)
@@ -121,6 +127,23 @@ def stage_requirements(repo_root, state, issue):
             continue
         spec = read_file(repo_root, spec_path)
         ok, problems = checks.lint_spec(spec)
+        aok, aproblems, adocs = a1_checks.check_a1_bundle(repo_root)
+        problems += aproblems
+        ok = ok and aok
+        ajok, ajreason = judge(repo_root, usage,
+            "Audit full A1 compliance, not just file presence. Require all C1-C4, K1-K3, "
+            "R-1 to R-3, F1-F2, T1-T4, E1-E5 checks to be substantively justified. "
+            "Every requirement must link real source statements; ASSUMED/INFERRED items "
+            "cannot be READY. No invented priorities, numbers or source evidence. "
+            "Every ambiguity, question and conflict needs affected IDs/default provenance. "
+            "Coverage topics must be covered/open/N-A with reason. Validation needs basis/gate "
+            "counts, tool outcomes and human next steps. Missing tools must remain explicit. "
+            "Reject unsupported readiness or superficial PASS claims. An honest NOT READY "
+            "verdict can meet documentation integrity if uncertainty is kept explicit.",
+            "\n\n".join(k+":\n"+v for k,v in adocs.items())) if aok else (False, 'A1 structural checks failed')
+        if not ajok:
+            ok = False
+            problems.append('A1 semantic validation: ' + ajreason)
         jok, jreason = judge(repo_root, usage,
                              "Every acceptance criterion in this spec is "
                              "testable: a developer who did not write it can "
@@ -128,6 +151,7 @@ def stage_requirements(repo_root, state, issue):
                              spec)
         store_usage(state, usage)
         if ok and jok:
+            state["a1_bundle_verified"] = True
             write_transcript(repo_root, stage, transcript)
             controller.set_stage(state, stage, "passed", artifact=spec_path,
                                  summary=result.get("summary", ""))
