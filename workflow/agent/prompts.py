@@ -10,7 +10,7 @@ import os
 def load_skill(repo_root):
     """My A1 requirements-ledger skill, reused for stage 1 (brief's table)."""
     path = os.path.join(repo_root, "workflow", "prompts",
-                        "requirements-ledger-skill.md")
+                        "requirements-ledger-compact.md")
     with open(path, "r", encoding="utf-8") as f:
         return f.read()
 
