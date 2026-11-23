@@ -142,11 +142,18 @@ def run_agent(role, model, system_prompt, task, repo_root, usage,
     contents.append({"role": "user", "parts": [{"text": task}]})
 
     transcript = []
+    action_ledger = []
     for step in range(config.MAX_AGENT_STEPS):
         try:
             # Keep original task, plus recent exact turns, not an LLM summary.
             # Full transcript remains an artifact. Agents can reread file ranges.
             sent = contents if len(contents) <= 9 else contents[:1] + contents[-8:]
+            if action_ledger:
+                sent = sent + [{"role":"user","parts":[{"text":
+                    "Exact prior action index (not reasoning):\n" + "\n".join(action_ledger) +
+                    "\nAvoid rereading the same ranges. After enough inspection, implement "
+                    "the design. Saved files are durable. Current step " + str(step) +
+                    " of " + str(config.MAX_AGENT_STEPS) + "."}]}]
             reply = gemini.generate(model, system_prompt, sent, usage)
         except (gemini.BudgetExhausted, gemini.QuotaExhausted) as e:
             return None, transcript, str(e)
@@ -161,6 +168,8 @@ def run_agent(role, model, system_prompt, task, repo_root, usage,
             continue
 
         kind = action.get("action")
+        action_ledger.append(json.dumps({k:v for k,v in action.items()
+            if k in ("action","path","start_line","end_line")}))
         print(f"[{role}] step={step} action={kind} calls={usage.calls} "
               f"tokens={usage.total_tokens}", flush=True)
         # Persist each completed model reply for interrupted-stage evidence.
@@ -172,9 +181,11 @@ def run_agent(role, model, system_prompt, task, repo_root, usage,
         if kind == "finish":
             result = action.get("result")
             if role == "Developer" and isinstance(result, dict) and not result.get("blocked"):
-                if not result.get("files_changed"):
+                actual = subprocess.run(["git","diff","origin/main","--","tinydb"],
+                    cwd=repo_root,capture_output=True,text=True).stdout
+                if not result.get("files_changed") or not actual.strip():
                     contents.append({"role":"user","parts":[{"text":
-                        "Finish rejected: no changed files reported. Implement the design, "
+                        "Finish rejected: no actual source diff exists. Implement the design, "
                         "edit source using write_file or a short Python command, verify "
                         "the source diff and build, then finish with files_changed. "
                         "Do not merely inspect status."}]})
@@ -199,6 +210,23 @@ def run_agent(role, model, system_prompt, task, repo_root, usage,
                 else:
                     obs = _tool_write_file(repo_root, action.get("path", ""),
                                            action["content"])
+        elif kind == "edit_file":
+            if read_only:
+                obs = "ERROR: reviewer cannot edit files"
+            else:
+                path = action.get("path", "")
+                full = _safe_path(repo_root, path)
+                old = action.get("old_text", "")
+                new = action.get("new_text", "")
+                if not full or not os.path.isfile(full) or not old:
+                    obs = "ERROR: edit requires existing file and nonempty old_text"
+                else:
+                    with open(full, encoding="utf-8") as f:
+                        text = f.read()
+                    if text.count(old) != 1:
+                        obs = "ERROR: old_text must match exactly once; read correct range"
+                    else:
+                        obs = _tool_write_file(repo_root, path, text.replace(old, new, 1))
         elif kind == "run_shell":
             obs = _tool_run_shell(repo_root, action.get("command", ""))
         else:

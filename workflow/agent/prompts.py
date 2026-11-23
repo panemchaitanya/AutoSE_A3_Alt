@@ -26,6 +26,7 @@ You work by replying with exactly ONE JSON object per turn. Available actions:
 {"action": "list_files", "path": "<dir>"}
 {"action": "read_file", "path": "<file>", "start_line": 1, "end_line": 160}
 {"action": "write_file", "path": "<file>", "content": "<full file content>"}
+{"action": "edit_file", "path": "<file>", "old_text": "<unique exact block>", "new_text": "<replacement>"}
 {"action": "run_shell", "command": "<whitelisted: pytest, python, grep, find, ls, cat, head, tail, wc, git diff|status|show|log>"}
 {"action": "finish", "result": { ... }}
 

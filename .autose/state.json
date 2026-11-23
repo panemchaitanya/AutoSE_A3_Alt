@@ -117,6 +117,10 @@
     {
       "event": "implementation -> failed (no source change under tinydb compared with main; build of unchanged code is insufficient)",
       "ts": "2026-11-23T15:50:30.854601+00:00"
+    },
+    {
+      "event": "operational recovery: no reviewer verdict exists",
+      "ts": "2026-11-23T15:54:46.499508+00:00"
     }
   ],
   "issue": 4,
