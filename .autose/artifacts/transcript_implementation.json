@@ -1,0 +1,17 @@
+[
+  {
+    "step": 0,
+    "role": "Developer",
+    "reply": "{\n  \"action\": \"read_file\",\n  \"path\": \"tinydb/table.py\"\n}"
+  },
+  {
+    "step": 1,
+    "role": "Developer",
+    "reply": "{\"action\": \"read_file\", \"path\": \"tests/test_tables.py\"}"
+  },
+  {
+    "step": 2,
+    "role": "Developer",
+    "reply": "{\"action\": \"read_file\", \"path\": \"tinydb/table.py\"}"
+  }
+]
