@@ -105,6 +105,18 @@
     {
       "event": "operational recovery: no reviewer verdict exists",
       "ts": "2026-11-23T17:30:13.106590+00:00"
+    },
+    {
+      "event": "Full A1 validation required; downstream checkpoints invalidated",
+      "ts": "2026-11-23T17:30:22.817085+00:00"
+    },
+    {
+      "event": "requirements -> running",
+      "ts": "2026-11-23T17:30:22.817100+00:00"
+    },
+    {
+      "event": "requirements -> failed (agent error: model retries exhausted; last error type=_Transient: Gemini API error 503: {\n  \"error\": {\n    \"code\": 503,\n    \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\",\n    \"status\": \"UNAVAILABLE\"\n  }\n}\n)",
+      "ts": "2026-11-23T17:31:39.334424+00:00"
     }
   ],
   "issue": 1,
@@ -133,13 +145,13 @@
     }
   },
   "usage": {
-    "calls": 37,
-    "completion_tokens": 11166,
+    "calls": 38,
+    "completion_tokens": 11185,
     "fallbacks": 0,
     "models": {
-      "gemini-3.5-flash-lite": 2
+      "gemini-3.5-flash-lite": 3
     },
-    "prompt_tokens": 328772,
-    "total_tokens": 339938
+    "prompt_tokens": 334705,
+    "total_tokens": 345890
   }
 }
