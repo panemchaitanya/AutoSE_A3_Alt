@@ -57,6 +57,12 @@ quality. ADR006 is superseded provisionally by012 for availability, not
 proved quality. Preserve all failed runs and distinguish responding model
 from requested primary and fallback.
 
+The de-confounded E1 protocol (fixed client revision, hashed prompts,
+recorded responding model, serial alternating arms, contamination
+marking, repetitions) is recorded in
+`experiment/e1/`. Cells stay PENDING until both arms complete under those
+controls; the confounded attempts above are not repurposed as evidence.
+
 ## E1b exploratory matched availability follow-up,22:12 IST
 
 Identical Developer prompt/schema/task,512output cap and temperature0.2,
