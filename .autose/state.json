@@ -21,13 +21,23 @@
     {
       "event": "requirements -> passed",
       "ts": "2026-11-23T12:44:26.848828+00:00"
+    },
+    {
+      "event": "design -> running",
+      "ts": "2026-11-23T12:44:39.378538+00:00"
+    },
+    {
+      "event": "design -> passed",
+      "ts": "2026-11-23T12:44:47.204573+00:00"
     }
   ],
   "issue": 1,
   "review_rounds": 0,
   "stages": {
     "design": {
-      "status": "pending"
+      "artifact": ".autose/artifacts/design.md",
+      "status": "passed",
+      "summary": "Designed the change to support string document IDs in update() and remove() operations by normalizing requested doc_ids with document_id_class."
     },
     "implementation": {
       "status": "pending"
@@ -48,10 +58,10 @@
     }
   },
   "usage": {
-    "calls": 4,
-    "completion_tokens": 594,
+    "calls": 9,
+    "completion_tokens": 1267,
     "fallbacks": 0,
-    "prompt_tokens": 21472,
-    "total_tokens": 22066
+    "prompt_tokens": 49095,
+    "total_tokens": 50362
   }
 }
