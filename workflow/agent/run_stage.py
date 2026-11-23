@@ -279,6 +279,7 @@ def stage_develop(repo_root, state, issue):
             report += ("\n## Untestable criteria (reported by Tester)\n- "
                        + "\n- ".join(result["criteria_untestable"]) + "\n")
         write_artifact(repo_root, "test_report.md", report)
+        write_artifact(repo_root, "pytest_full_output.txt", full_out)
         if ok:
             controller.set_stage(state, "testing", "passed",
                                  artifact=os.path.join(config.ARTIFACTS_DIR,
@@ -428,6 +429,13 @@ def main():
         ok = stage_review(repo_root, state, issue, args.pr_number)
 
     controller.save_state(repo_root, state)
+    # Export cumulative state alongside artifacts for external evidence audit.
+    # It is cumulative, never sum these snapshots across resumed runs.
+    write_artifact(repo_root, "state_snapshot.json", json.dumps(state, indent=2))
+    write_artifact(repo_root, "usage.json", json.dumps({
+        "scope": "cumulative branch state including prior recovered stages",
+        "stage": args.stage, "usage": state.get("usage", {}),
+    }, indent=2))
     sys.exit(0 if ok else 1)
 
 
