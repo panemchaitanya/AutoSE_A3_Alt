@@ -1,6 +1,6 @@
 {
   "scope": "cumulative branch state including prior recovered stages",
-  "stage": "requirements",
+  "stage": "design",
   "usage": {
     "calls": 24,
     "completion_tokens": 2055,
