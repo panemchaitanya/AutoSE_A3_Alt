@@ -73,6 +73,10 @@
     {
       "event": "testing -> passed",
       "ts": "2026-11-23T12:53:44.411928+00:00"
+    },
+    {
+      "event": "operational recovery: no reviewer verdict exists",
+      "ts": "2026-11-23T12:56:41.377766+00:00"
     }
   ],
   "issue": 1,
