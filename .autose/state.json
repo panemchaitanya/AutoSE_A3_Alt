@@ -17,13 +17,23 @@
     {
       "event": "requirements -> passed",
       "ts": "2026-11-23T12:36:24.108241+00:00"
+    },
+    {
+      "event": "design -> running",
+      "ts": "2026-11-23T12:36:36.617447+00:00"
+    },
+    {
+      "event": "design -> passed",
+      "ts": "2026-11-23T12:36:47.538419+00:00"
     }
   ],
   "issue": 3,
   "review_rounds": 0,
   "stages": {
     "design": {
-      "status": "pending"
+      "artifact": ".autose/artifacts/design.md",
+      "status": "passed",
+      "summary": "Designed the change to add an optional limit parameter to Table.search() with proper query caching integration."
     },
     "implementation": {
       "status": "pending"
@@ -44,10 +54,10 @@
     }
   },
   "usage": {
-    "calls": 5,
-    "completion_tokens": 643,
+    "calls": 10,
+    "completion_tokens": 1395,
     "fallbacks": 0,
-    "prompt_tokens": 24492,
-    "total_tokens": 25135
+    "prompt_tokens": 52530,
+    "total_tokens": 53925
   }
 }
