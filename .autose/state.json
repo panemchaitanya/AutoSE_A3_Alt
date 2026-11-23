@@ -1,0 +1,41 @@
+{
+  "branch": "autose/issue-5",
+  "fix_cycles": 0,
+  "history": [
+    {
+      "event": "run created",
+      "ts": "2026-11-23T12:44:15.042512+00:00"
+    },
+    {
+      "event": "triggered by panemchaitanya via workflow_dispatch",
+      "ts": "2026-11-23T12:44:15.042533+00:00"
+    },
+    {
+      "event": "fresh start supersedes d5a102a2dc632c05846ee424e73d474d6dfc77c4",
+      "ts": "2026-11-23T12:44:15.042536+00:00"
+    }
+  ],
+  "issue": 5,
+  "review_rounds": 0,
+  "stages": {
+    "design": {
+      "status": "pending"
+    },
+    "implementation": {
+      "status": "pending"
+    },
+    "release": {
+      "status": "pending"
+    },
+    "requirements": {
+      "status": "pending"
+    },
+    "review": {
+      "status": "pending"
+    },
+    "testing": {
+      "status": "pending"
+    }
+  },
+  "usage": {}
+}

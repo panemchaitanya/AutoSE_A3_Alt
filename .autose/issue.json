@@ -1,0 +1,5 @@
+{
+  "number": 5,
+  "title": "Searches sometimes return data that doesn't match what's in the db??",
+  "body": "This is driving me nuts. Sometimes a search returns documents with values\nthat are NOT what's stored. Example: I search for something, tweak the\nreturned dicts a bit for display purposes (like formatting a field), and\nlater when I run the SAME search again the old tweaked values show up even\nthough I never called update or anything. It's like tinydb remembers my\ndisplay edits.\n\nIf I restart the script the data is fine again, so the file itself is OK. It\nonly happens within one run and only sometimes (maybe only when I edit the\ndicts I got back?). Is this a caching bug? Can you make it so the documents\nyou get back from search/all are just... normal dicts you can safely edit\nwithout side effects?\n\nNot sure what exactly is going on, happy to provide more info if you tell me\nwhat you need."
+}
