@@ -365,7 +365,7 @@ def stage_review(repo_root, state, issue, pr_number):
         "git", "diff", "origin/main...HEAD", "--", ".",
         ":(exclude).autose", ":(exclude)experiment", ":(exclude)results",
         ":(exclude)workflow", ":(exclude)architecture", ":(exclude).github",
-        ":(exclude)report.pdf", ":(exclude)demo.mp4"],
+        ":(exclude)report.pdf", ":(exclude)demo.mp4", ":(exclude)README.md"],
         cwd=repo_root, capture_output=True, text=True, check=True)
     diff = proc.stdout
     task = ("Review this pull request.\n"
@@ -378,7 +378,7 @@ def stage_review(repo_root, state, issue, pr_number):
         review_root = os.path.join(clean, "repo")
         shutil.copytree(repo_root, review_root, ignore=shutil.ignore_patterns(
             ".git", ".autose", "experiment", "results", "workflow",
-            "architecture", ".github", "report.pdf", "demo.mp4",
+            "architecture", ".github", "report.pdf", "demo.mp4", "README.md",
             "__pycache__", ".pytest_cache"))
         result, transcript, err = agent.run_agent(
             "Reviewer", config.MODEL_REVIEW, prompts.REVIEW_SYSTEM, task,

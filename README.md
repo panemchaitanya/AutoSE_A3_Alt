@@ -16,8 +16,9 @@ into a tested, independently reviewed pull request.
   gemini-3.5-flash for Developer / Reviewer (ADR-006). Total tokens per run are
   recorded from API usage metadata. `results/results.csv` distinguishes
   branch-cumulative counts from attempts and separate reviews; it is not yet
-  the total usage ledger. Recovery overrides use 3.1-flash-lite with a
-  3.5-flash-lite fallback, so defaults are not responding-model evidence. The key sits on a free-tier project with no billing
+  the total usage ledger. Earlier recovery overrides requested 3.1-flash-lite with a
+  3.5-flash-lite fallback. Current variables in both repos request
+  3.5-flash-lite for every role. Defaults are not responding-model evidence. The key sits on a free-tier project with no billing
   attached, so spend is hard-capped at the free quota.
 
 ## How to trigger the workflow
@@ -27,7 +28,8 @@ into a tested, independently reviewed pull request.
 2. Add the label `autose` to it, or comment `/autose` on it.
 3. Watch `.autose/artifacts/` on the branch `autose/issue-<N>`: every stage
    commits its artifact there (`spec.md`, `design.md`, `diff.patch`,
-   `test_report.md`, `pr.md`, `review.md`) plus a transcript; the same files
+   `test_report.md`, `pr.md`, `review.md`) plus a transcript. Corrected requirements also require versioned A1
+   SRS/REGISTER/VALIDATION and substantive validation; the same files
    are attached to the Actions run. `state.json` on the branch shows the
    pipeline's decisions.
 4. The run ends with a PR reviewed by the independent reviewer. Only a human
@@ -46,7 +48,7 @@ demo.mp4             # demo video link (see results/runs.md)
 ARCHITECTURE.md      # my A2 architecture document, feeds the Designer
 architecture/
   views/             # component view, sequence view, stage map
-  decisions/         # ADR-001.md ... ADR-013.md (Nygard format)
+  decisions/         # ADR-001.md ... ADR-015.md (Nygard format)
 workflow/            # copy of .github/workflows/ + all agent code + prompts
 experiment/
   issues/            # the 5 issue texts
