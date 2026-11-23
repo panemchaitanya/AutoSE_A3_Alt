@@ -1,0 +1,22 @@
+[
+  {
+    "step": 0,
+    "role": "Designer",
+    "reply": "{\n  \"action\": \"list_files\",\n  \"path\": \".\"\n}"
+  },
+  {
+    "step": 1,
+    "role": "Designer",
+    "reply": "{\"action\": \"read_file\", \"path\": \"tinydb/table.py\"}"
+  },
+  {
+    "step": 2,
+    "role": "Designer",
+    "reply": "{\n  \"action\": \"write_file\",\n  \"path\": \".autose/artifacts/design.md\",\n  \"content\": \"# Design: Prevent mutating search and retrieval results from modifying internal database cache\\n\\n## Approach\\nTo prevent retrieved or searched document dictionaries from sharing references with internal database caches or raw storage data, we ensure that deep copies (or fresh instantiations with deep copies) of document dictionaries are returned whenever documents are retrieved or searched across `Table` methods (`search`, `get`, `__iter__`, and cache hits).\\nSpecifically, `Table.search` currently caches the list of matching `Document` instances in `self._query_cache`. When a cache hit occurs, returning a shallow copy (`cached_results[:]`) returns the exact same `Document` objects that are cached, meaning mutating nested dictionaries inside those documents modifies the cached instances (violating S-02/S-06 and FR-001). We will update query caching and retrieval methods so that a deep copy of each document (or fresh `Document` instances with deep-copied underlying dictionaries) is returned on every retrieval and search.\\n\\n## Files to change\\n- `tinydb/table.py`\\n- `tests/test_tables.py` (NEW or modified existing test file)\\n\\n## Functions/classes\\n- `tinydb.table.Table.search`: Ensure cached results or newly evaluated documents are deep-copied (`copy.deepcopy`) so returning them never exposes references to internal structures or cache entries.\\n- `tinydb.table.Table.get`: Ensure retrieved documents via `doc_id`, `doc_ids`, or `cond` return deep copies of the underlying dictionaries wrapped in `document_class`.\\n- `tinydb.table.Table.__iter__`: Ensure iterated documents return deep copies.\\n\\n## Test plan\\n- Test that searching for a document, mutating a field (including nested dicts/lists) on the returned `Document`, and searching again returns the original un-mutated values stored in the database.\\n- Test that `get` (by `doc_id`, `doc_ids`, and `cond`) and `all()` / iteration return deep copies such that local mutations do not affect database state or subsequent retrievals.\\n\\n## Constraints respected\\n- ADR 2 (Query cache keyed by stable query hash & correctness of cache contents).\\n- Layering and pure Python constraints: no third-party dependencies outside stdlib (`copy`).\\n\"\n}"
+  },
+  {
+    "step": 3,
+    "role": "Designer",
+    "reply": "{\n  \"action\": \"finish\",\n  \"result\": {\n    \"files\": [\n      \"tinydb/table.py\",\n      \"tests/test_tables.py\"\n    ],\n    \"summary\": \"Designed the change to prevent mutating search and retrieval results from modifying internal database cache or storage state by ensuring deep copies of document dictionaries are returned across all search, get, and iteration methods.\"\n  }\n}"
+  }
+]
