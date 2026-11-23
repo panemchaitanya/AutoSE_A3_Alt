@@ -1,0 +1,18 @@
+{
+  "pricing_source": "https://ai.google.dev/gemini-api/docs/pricing",
+  "pricing_checked_IST": "2026-11-23 22:10",
+  "probes": [
+    {
+      "requested_model": "gemini-3.8-flash",
+      "status": 503,
+      "error": "{\n  \"error\": {\n    \"code\": 503,\n    \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\",\n    \"status\": \"UNAVAILABLE\"\n  }\n}\n",
+      "seconds": 0.35
+    },
+    {
+      "requested_model": "gemini-4-hydrogen",
+      "status": 503,
+      "error": "{\n  \"error\": {\n    \"code\": 503,\n    \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\",\n    \"status\": \"UNAVAILABLE\"\n  }\n}\n",
+      "seconds": 0.52
+    }
+  ]
+}

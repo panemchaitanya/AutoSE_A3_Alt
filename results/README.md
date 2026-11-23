@@ -1,8 +1,8 @@
-# results/
+# Results evidence
 
-- `results.csv` - one row per graded issue run on the submission repo:
-  per-stage pass/fail, fix cycles and review rounds used, reviewer verdict,
-  hidden acceptance tests passed, total tokens (measured from the API's
-  usageMetadata), wall time. Filled from real runs only.
-- `runs.md` - links to every Actions run, PR and review, including failed
-  development runs and what each failure changed.
+- results.csv: historical per-issue reached stages across recoveries, grouped by repository. Not uninterrupted passes or full current-contract compliance.
+- hosted-index.md and repository CSVs: every captured hosted run, including failures and CI.
+- runs.md: chronological explanation, with newer correction notices superseding old snapshots.
+- branch-usage.csv: cumulative branch snapshots, not additive lifetime usage.
+- Historical COMMENT approve reviews had a README context flaw, so they are not fully independent. Corrected-boundary reviews completed: zero.
+- Hidden tests remain sealed while autonomous attempts continue. No final acceptance result or complete lifetime token total is claimed.

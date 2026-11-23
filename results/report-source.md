@@ -10,7 +10,7 @@
 
 The three views are in `architecture/views/`.
 
-The system turns a labeled issue into a tested, independently reviewed pull
+The system turns a labeled issue into a tested, reviewed pull
 request. A maintainer starts it by adding the label `autose` to an issue or
 commenting `/autose`; the workflow ends after an independent review, and a
 human always makes the merge decision.
@@ -66,6 +66,7 @@ Full ADR text is in `architecture/decisions/`. Superseded decisions remain in hi
 | 013 | Safety correction | State shell limits honestly | Treat whitelist as sandbox | Python is arbitrary execution | Accepted limitation |
 | 014 | Bounded context |160-line reads, four recent pairs | Unbounded full conversation | Short probes worked; long runs failed | Provisional, no completed trial |
 | 015 | A1 adaptation | Restore full mandatory outputs/checks | Compact omission | Reuse cannot silently remove required behavior | Compact rejected, correction unverified |
+| 016 | Reviewer input | Exclude assignment README | Leave README in filtered copy | It exposes pipeline reasoning | Corrected, hosted review unverified |
 
 ### The three decisions that mattered most
 
@@ -166,7 +167,7 @@ recorded in section 6 rather than explained away.
 
 ## 4. Results
 
-Working evidence snapshot at 22:00 IST, 23 November 2026. Incomplete, not a final-completion claim. Hidden tests remain sealed while valid autonomous runs continue.
+Working evidence snapshot at 22:13 IST, 23 November 2026. Incomplete, not a final-completion claim. Hidden tests remain sealed while valid autonomous runs continue.
 
 | Stage reached across recoveries | Alt issues passed /5 | A3 issues passed /5 |
 | --- | --- | --- |
@@ -175,13 +176,13 @@ Working evidence snapshot at 22:00 IST, 23 November 2026. Incomplete, not a fina
 | Implementation |3/5|0/5|
 | Testing |3/5|0/5|
 | Release |3/5|0/5|
-| Independent posted verdict |3/5|0/5|
+| Historical posted verdict, boundary flawed |3/5|0/5|
 
-These are per-issue achieved-stage counts, not per-attempt success rates or uninterrupted passes. Alt issues 1-3 reached COMMENT approve reviews on PRs 6-8, unmerged. Hosted issue 3 release recorded 230 passed,1 skipped; a separate local replay recorded 231 passed. No unexplained substitution between environments is made. The reviewer found no defects on these three real changes; narrow generated-test audits passed, but hidden acceptance remains unmeasured. E2 sp3 was missed in both conditions.
+These are per-issue achieved-stage counts, not per-attempt success rates or uninterrupted passes. Alt issues 1-3 reached COMMENT approve reviews on PRs 6-8, unmerged. Hosted issue 3 release recorded 230 passed,1 skipped; a separate local replay recorded 231 passed. No unexplained substitution between environments is made. These reviews were not fully independent: assignment README carried pipeline reasoning into the filtered checkout. ADR016 now excludes it, but all three need corrected-boundary reruns. The historical reviewer found no defects on these three real changes; narrow generated-test audits passed, but hidden acceptance remains unmeasured. E2 sp3 was missed in both conditions.
 
 Alt issue 4's earlier implementation checkpoint was invalidated: no source diff and a syntax-invalid test stub. Subsequent real-diff gates rejected read-only Developer runs despite claimed file changes. Issue 5 also exhausted 40 steps reading without editing. These are execution failures, not only provider outages. Exact-block editing and baseline-regression checks were added afterward, with no completed issue trial yet.
 
-At 21:32 the student authorized transfer before Alt completion. Protected owner-directed setup PR 1 imported the partial authored tree into A3; PR 7 transferred support corrections. Generated issue PRs were never merged. A3 issues 2-6 correspond to Alt 1-5. Its first four own runs failed requirements. Issue 6 then passed requirements and, on recovery, design; implementation then failed 503. A corrected-contract issue 2 rerun is active. These were under the historical single-output requirements contract, not verified full-A1 compliance. Alt successes are not A3 results. Links and attempt logs are in `results/runs.md` and repository-specific CSVs.
+At 21:32 the student authorized transfer before Alt completion. Protected owner-directed setup PR 1 imported the partial authored tree into A3; PR 7 transferred support corrections. Generated issue PRs were never merged. A3 issues 2-6 correspond to Alt 1-5. Its first four own runs failed requirements. Issue 6 then passed requirements and, on recovery, design; implementation then failed 503. Corrected-contract requirements reruns for issues 2-4 failed 503; issue 5 is now active. These were under the historical single-output requirements contract, not verified full-A1 compliance. Alt successes are not A3 results. Links and attempt logs are in `results/runs.md` and repository-specific CSVs.
 
 Token accounting is incomplete. Latest Alt branch cumulative snapshots total 1,520,509 tokens across 208 calls. This is not lifetime usage: it excludes superseded attempts and independent reviewer increments. E2's 10 successful local review records total 597,542 tokens; these are separate local calls. Earlier interrupted/probe usage is not fully retained. Neither summing repeated artifact snapshots nor calling these values a complete total is valid. Free-tier use only; no paid billing was enabled.
 
@@ -192,6 +193,10 @@ Generated tests for issues 1/2/3 fail on unchanged pinned code (2/3/3 failures) 
 ### A1 compliance correction
 
 A later audit found that the full A1 skill was loaded but the role prompt requested only spec.md, conflicting with mandatory SRS/REGISTER/VALIDATION outputs. Historical requirements testability passes do not prove full A1 compliance. An unused compact adaptation was rejected (ADR-015). Full skill loading is restored; all three versioned outputs plus handoff spec are required. Mechanical structure/check-result validation and a complete-document semantic audit now gate requirements. Existing downstream checkpoints are invalidated when corrected requirements first run. No corrected-contract issue has yet completed. This is an unresolved rubric gap, not a cosmetic change.
+
+### Reviewer boundary correction
+
+The filtered reviewer checkout still included assignment README.md, containing pipeline reasoning/results. Excluding artifact directories alone was insufficient. ADR016 excludes that README from both diff and checkout while preserving upstream README.rst. Historical COMMENT verdicts are real, but not fully compliant independent reviews. Corrected-boundary reviews completed: zero. The working video shows historical evidence, not proof of corrected independence.
 
 ## 5. Hindsight
 
@@ -237,7 +242,7 @@ validated SHA.
    runners. The observed verdict contrast is consistent with anchoring; it does
    not establish causality or measure its size in production, and the catch metric is
    keyword-based over the verdict object.
-5. **LLM judges are used at two gates.** Although they can only veto, a
+5. **LLM judges check requirements, A1 substance and design.** Although they can only veto, a
    miscalibrated judge can block a good stage; the judge/model agreement
    data in the transcripts is the evidence offered.
 6. **The reviewer is from the same model family as the implementer.**
@@ -250,6 +255,6 @@ validated SHA.
 
 ## Appendix
 
-- A. Full ADR texts: `architecture/decisions/ADR-001.md` ... `ADR-015.md`.
+- A. Full ADR texts: `architecture/decisions/ADR-001.md` ... `ADR-016.md`.
 - B. Run links: `results/runs.md`.
 - C. AI-use disclosure: see `README.md` (course policy).

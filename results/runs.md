@@ -1,3 +1,5 @@
+> 22:13 correction: historical Alt reviews are not fully independent because assignment README exposed reasoning. ADR016 excludes it for future reviews. Corrected-boundary reviewed count is zero in both repos. Corrected full-A1 reruns are also required; older achieved-stage results remain historical only.
+
 # Working run account
 
 Current machine-reconciled index: [hosted-index.md](hosted-index.md), with both repository CSVs. That index supersedes older status snapshots below but preserves them as chronology. At21:55 IST: Alt3/5 posted independent verdicts across recoveries; A3 requirements1/5, fully reviewed0/5. Hidden tests still sealed while coding continues. Support-only owner-directed PR transfers are separate from generated issue PRs, which remain unmerged.

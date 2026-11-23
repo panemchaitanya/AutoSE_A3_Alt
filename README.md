@@ -1,3 +1,5 @@
+> Correction at 22:13 IST: historical Alt COMMENT reviews were not fully independent because assignment README exposed pipeline reasoning. ADR016 closes that path; corrected-boundary reviews completed: zero. Earlier three verdicts remain real historical evidence, not full-compliance results. New probes on verified-free3.8-flash and4-hydrogen also returned503; no paid fallback used.
+
 # AutoSE A3 working submission
 
 **Working snapshot, 23 November 2026 21:59 IST. Not complete.** [Report](report.pdf) and [captioned recovery walkthrough](demo.mp4) preserve the current evidence. The video uses actual Alt issue3 across recovery attempts, not an uninterrupted A3 run. Hidden tests remain sealed while coding continues. Earlier requirements stages checked testability but did not establish full A1 artifact compliance; corrected full-skill output/validation reruns are required. See ADR015 and the report. Generated issue PRs stay unmerged.
