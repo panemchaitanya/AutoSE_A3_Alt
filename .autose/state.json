@@ -21,6 +21,10 @@
     {
       "event": "requirements -> passed",
       "ts": "2026-11-23T12:44:35.797134+00:00"
+    },
+    {
+      "event": "operational recovery: no reviewer verdict exists",
+      "ts": "2026-11-23T13:20:25.876322+00:00"
     }
   ],
   "issue": 2,
