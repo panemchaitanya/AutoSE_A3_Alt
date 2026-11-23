@@ -26,7 +26,7 @@ MAX_OUTPUT_TOKENS = int(os.environ.get("MAX_OUTPUT_TOKENS", "8192"))
 
 # --- Retry/backoff for the model API ---
 API_RETRIES = 2
-API_BACKOFF_SECONDS = [5, 15]
+API_BACKOFF_SECONDS = [15, 30]
 
 # --- Paths (relative to the work-branch checkout) ---
 STATE_PATH = os.environ.get("AUTOSE_STATE_PATH", ".autose/state.json")
