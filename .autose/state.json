@@ -91,8 +91,12 @@
       "ts": "2026-11-23T15:29:59.278636+00:00"
     },
     {
-      "ts": "2026-11-23T15:31:56.780132+00:00",
-      "event": "audit invalidated implementation checkpoint: no tinydb source diff; generated test syntax-invalid. Return to implementation, no test bypass."
+      "event": "audit invalidated implementation checkpoint: no tinydb source diff; generated test syntax-invalid. Return to implementation, no test bypass.",
+      "ts": "2026-11-23T15:31:56.780132+00:00"
+    },
+    {
+      "event": "operational recovery: no reviewer verdict exists",
+      "ts": "2026-11-23T15:32:21.160451+00:00"
     }
   ],
   "issue": 4,

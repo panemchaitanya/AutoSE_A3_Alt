@@ -227,6 +227,14 @@ def stage_develop(repo_root, state, issue):
                             f"developer blocked: {result.get('reason')}",
                             transcript)
             changed = git_changed_files(repo_root)
+            # A successful import of unchanged code is not implementation.
+            source_diff = subprocess.run(
+                ["git", "diff", "origin/main", "--", "tinydb"],
+                cwd=repo_root, capture_output=True, text=True, check=True).stdout
+            if not source_diff.strip():
+                return fail(repo_root, state, "implementation",
+                            "no source change under tinydb compared with main; "
+                            "build of unchanged code is insufficient", transcript)
             ok, msg = checks.check_build(repo_root, changed)
             if not ok:
                 feedback = f"The code does not build:\n{msg}"
