@@ -63,12 +63,16 @@
       "ts": "2026-11-23T15:40:11.028366+00:00"
     },
     {
-      "ts": "2026-11-23T15:40:45.831422+00:00",
-      "event": "implementation -> running"
+      "event": "implementation -> running",
+      "ts": "2026-11-23T15:40:45.831422+00:00"
     },
     {
-      "ts": "2026-11-23T15:44:35.702864+00:00",
-      "event": "implementation -> failed (agent error: step cap 40 reached)"
+      "event": "implementation -> failed (agent error: step cap 40 reached)",
+      "ts": "2026-11-23T15:44:35.702864+00:00"
+    },
+    {
+      "event": "operational recovery: no reviewer verdict exists",
+      "ts": "2026-11-23T16:00:54.461912+00:00"
     }
   ],
   "issue": 5,
@@ -99,13 +103,13 @@
     }
   },
   "usage": {
-    "prompt_tokens": 420914,
-    "completion_tokens": 2735,
-    "total_tokens": 423649,
     "calls": 55,
+    "completion_tokens": 2735,
     "fallbacks": 3,
     "models": {
       "gemini-3.5-flash-lite": 46
-    }
+    },
+    "prompt_tokens": 420914,
+    "total_tokens": 423649
   }
 }
