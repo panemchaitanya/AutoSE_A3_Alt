@@ -3,5 +3,10 @@
     "step": 0,
     "role": "Tester",
     "reply": "{\n  \"action\": \"list_files\",\n  \"path\": \"tests\"\n}"
+  },
+  {
+    "step": 1,
+    "role": "Tester",
+    "reply": "{\n  \"action\": \"write_file\",\n  \"path\": \"tests_autose/test_db_get_default.py\",\n  \"content\": \"import pytest\\nfrom tinydb import TinyDB, Query\\nfrom tinydb.storages import MemoryStorage\\n\\n\\ndef():\\n    pass\\n\"\n}"
   }
 ]
