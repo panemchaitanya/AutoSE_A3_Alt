@@ -14,6 +14,8 @@ import argparse
 import json
 import os
 import subprocess
+import shutil
+import tempfile
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -307,16 +309,29 @@ def stage_review(repo_root, state, issue, pr_number):
         return True
     controller.set_stage(state, stage, "running")
     usage = load_usage(state)
-    diff = make_diff(repo_root, base_ref="origin/main")
+    # Pipeline artifacts are versioned for audit, not reviewer input.
+    proc = subprocess.run([
+        "git", "diff", "origin/main...HEAD", "--", ".",
+        ":(exclude).autose", ":(exclude)experiment", ":(exclude)results",
+        ":(exclude)workflow", ":(exclude)architecture", ":(exclude).github",
+        ":(exclude)report.pdf", ":(exclude)demo.mp4"],
+        cwd=repo_root, capture_output=True, text=True, check=True)
+    diff = proc.stdout
     task = ("Review this pull request.\n"
             + prompts.untrusted("ISSUE TITLE", issue.get("title", ""))
             + prompts.untrusted("ISSUE BODY", issue.get("body", ""))
             + f"\n--- PROPOSED DIFF ---\n{diff[:30000]}\n\n"
             "The repo checkout is at the PR head. Review, then finish with "
             "the verdict object.")
-    result, transcript, err = agent.run_agent(
-        "Reviewer", config.MODEL_REVIEW, prompts.REVIEW_SYSTEM, task,
-        repo_root, usage, read_only=True)
+    with tempfile.TemporaryDirectory(prefix="autose-review-") as clean:
+        review_root = os.path.join(clean, "repo")
+        shutil.copytree(repo_root, review_root, ignore=shutil.ignore_patterns(
+            ".git", ".autose", "experiment", "results", "workflow",
+            "architecture", ".github", "report.pdf", "demo.mp4",
+            "__pycache__", ".pytest_cache"))
+        result, transcript, err = agent.run_agent(
+            "Reviewer", config.MODEL_REVIEW, prompts.REVIEW_SYSTEM, task,
+            review_root, usage, read_only=True)
     store_usage(state, usage)
     write_transcript(repo_root, stage, transcript)
     if err:

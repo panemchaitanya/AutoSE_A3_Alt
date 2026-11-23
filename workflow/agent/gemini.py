@@ -10,6 +10,7 @@ reporting required by the assignment is measured, not estimated.
 """
 
 import json
+import http.client
 import os
 import time
 import urllib.error
@@ -18,6 +19,7 @@ import urllib.request
 import config
 
 API_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
+_LAST_REQUEST = 0.0
 
 
 class QuotaExhausted(Exception):
@@ -56,6 +58,9 @@ class Usage:
 
 
 def _post(model, payload, api_key):
+    global _LAST_REQUEST
+    time.sleep(max(0.0, 5.0 - (time.monotonic() - _LAST_REQUEST)))
+    _LAST_REQUEST = time.monotonic()
     url = f"{API_BASE}/{model}:generateContent"
     req = urllib.request.Request(
         url,
@@ -67,7 +72,7 @@ def _post(model, payload, api_key):
         method="POST",
     )
     try:
-        with urllib.request.urlopen(req, timeout=300) as resp:
+        with urllib.request.urlopen(req, timeout=60) as resp:
             return json.loads(resp.read().decode("utf-8"))
     except urllib.error.HTTPError as e:
         body = e.read().decode("utf-8", "replace")[:500]
@@ -76,6 +81,9 @@ def _post(model, payload, api_key):
         if 500 <= e.code < 600:
             raise _Transient(f"Gemini API error {e.code}: {body}")
         raise RuntimeError(f"Gemini API error {e.code}: {body}")
+    except (TimeoutError, ConnectionError, urllib.error.URLError,
+            http.client.RemoteDisconnected) as e:
+        raise _Transient(f"transport failure: {type(e).__name__}: {e}") from e
 
 
 class _RateLimited(Exception):
@@ -110,6 +118,16 @@ def response_schema(system_prompt):
         "findings": {"type": "ARRAY", "items": finding},
         "classification": {"type": "STRING", "nullable": True},
     })
+    if "You are the Reviewer agent" in system_prompt:
+        result = obj({
+            "verdict": {"type": "STRING", "enum": ["approve", "request_changes"]},
+            "findings": {"type": "ARRAY", "items": obj({
+                "file": string, "line": {"type": "INTEGER"}, "issue": string,
+                "severity": {"type": "STRING", "enum": ["blocker", "major", "minor"]}},
+                ("file", "line", "issue", "severity"))},
+            "classification": {"type": "STRING", "nullable": True},
+            "summary": string,
+        }, ("verdict", "findings", "classification", "summary"))
     def action(name, fields):
         return obj({"action": {"type": "STRING", "enum": [name]},
                     **fields}, ("action", *fields))
