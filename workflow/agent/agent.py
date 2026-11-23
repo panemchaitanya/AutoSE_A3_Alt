@@ -156,6 +156,14 @@ def run_agent(role, model, system_prompt, task, repo_root, usage,
             continue
 
         kind = action.get("action")
+        print(f"[{role}] step={step} action={kind} calls={usage.calls} "
+              f"tokens={usage.total_tokens}", flush=True)
+        # Persist each completed model reply for interrupted-stage evidence.
+        progress_dir = os.path.join(repo_root, config.ARTIFACTS_DIR)
+        os.makedirs(progress_dir, exist_ok=True)
+        with open(os.path.join(progress_dir, f"progress_{role.lower()}.json"),
+                  "w", encoding="utf-8") as progress:
+            json.dump({"transcript": transcript, "usage": usage.as_dict()}, progress)
         if kind == "finish":
             result = action.get("result")
             if not isinstance(result, dict):
