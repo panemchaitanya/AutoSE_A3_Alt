@@ -53,10 +53,14 @@
     {
       "event": "continue requested -> re-enter at implementation",
       "ts": "2026-11-23T12:51:37.702724+00:00"
+    },
+    {
+      "event": "operational recovery: no reviewer verdict exists",
+      "ts": "2026-11-23T12:52:38.176613+00:00"
     }
   ],
   "issue": 1,
-  "review_rounds": 2,
+  "review_rounds": 0,
   "stages": {
     "design": {
       "artifact": ".autose/artifacts/design.md",

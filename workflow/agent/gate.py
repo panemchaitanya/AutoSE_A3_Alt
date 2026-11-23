@@ -69,7 +69,7 @@ def main():
         issue_number = int(os.environ["INPUT_ISSUE"])
         entry = os.environ.get("INPUT_ENTRY", "").strip() or None
         actor = os.environ.get("GITHUB_ACTOR", "?")
-        if entry not in (None, "design", "implementation"):
+        if entry not in (None, "design", "implementation", "resume"):
             return skip(f"unknown entry stage {entry}")
     else:
         return skip(f"unsupported event {event_name}")
@@ -118,9 +118,16 @@ def main():
         state = controller.load_state(".")
         if state is None:
             return skip(f"no state on {branch}; cannot continue")
-        state["review_rounds"] = state.get("review_rounds", 0) + 1
-        controller.entry_stage_for_continue(state,
-            "approach" if entry == "design" else "code")
+        if entry == "resume":
+            # Operational retries are not reviewer-requested change rounds.
+            # Repair counts previously assigned before any review existed.
+            if not state["stages"]["review"].get("verdict"):
+                controller.record(state, "operational recovery: no reviewer verdict exists")
+                state["review_rounds"] = 0
+        else:
+            state["review_rounds"] = state.get("review_rounds", 0) + 1
+            controller.entry_stage_for_continue(state,
+                "approach" if entry == "design" else "code")
 
     os.makedirs(".autose", exist_ok=True)
     with open(".autose/issue.json", "w", encoding="utf-8") as f:
