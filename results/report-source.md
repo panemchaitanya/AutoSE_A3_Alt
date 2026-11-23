@@ -39,11 +39,11 @@ check gates the hand-over:
 
 Prompts carry declared inputs; ordinary agents retain repository read access. The reviewer gets a filtered fresh checkout excluding pipeline reasoning. Code decides transitions. These are prototype controls, not a security sandbox.
 
-### Real sequence: issue 3 across recovery attempts
+### Historical sequence: issue 3 across recovery attempts, boundary flawed
 
 ![Observed issue 3 sequence](sequence.png)
 
-Pipeline 45197403640 and independent review 45199274608 are real separate runs, linked in results/runs.md. The posted verdict is COMMENT approve, not formal approval. No merge.
+Pipeline 45197403640 and historical review 45199274608 are real separate runs, linked in results/runs.md. The reviewer saw assignment README context, so this was NOT fully independent. Corrected-boundary rerun is required. The posted verdict is COMMENT approve, not formal approval. No merge.
 
 ## 2. Design decisions
 

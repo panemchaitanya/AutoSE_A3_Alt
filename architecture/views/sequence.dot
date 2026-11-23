@@ -7,7 +7,7 @@ digraph G {
  C [label="Operational resume 45197403640\nDefinite post-ORION-key dispatch"];
  D [label="Requirements + design skipped as passed\nHosted implementation + testing passed"];
  E [label="Release reran pytest and opened PR 8\nNo merge"];
- F [label="Independent review 45199274608\nFresh filtered source; own prompt"];
+ F [label="Historical review 45199274608\nREADME context flaw: NOT fully independent"];
  H [label="Posted COMMENT approve: 6023844081\nNot formal GitHub approval"];
  {rank=same;A;B;C;}
  {rank=same;D;E;F;H;}
