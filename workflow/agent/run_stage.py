@@ -319,6 +319,9 @@ def stage_develop(repo_root, state, issue):
             continue
 
         ok, msg, full_out = checks.run_tests(repo_root, test_files)
+        # Passing a subset is not passing the stage's every-criterion check.
+        if result.get("criteria_untestable"):
+            ok = False
         report = (f"# Test report\n\nTests written: "
                   f"{', '.join(test_files)}\n\nVerdict: "
                   f"{'PASS' if ok else 'FAIL'}\n\n```\n{msg}\n```\n")
@@ -327,6 +330,11 @@ def stage_develop(repo_root, state, issue):
                        + "\n- ".join(result["criteria_untestable"]) + "\n")
         write_artifact(repo_root, "test_report.md", report)
         write_artifact(repo_root, "pytest_full_output.txt", full_out)
+        if result.get("criteria_untestable"):
+            return fail(repo_root, state, "testing",
+                        "acceptance criteria remain untested: "
+                        + "; ".join(str(item) for item in result["criteria_untestable"])
+                        + "; see test_report.md", transcript)
         if ok:
             baseline_ok, baseline_out = checks.baseline_regression_check(repo_root, test_files)
             write_artifact(repo_root, "baseline_regression_output.txt", baseline_out)
