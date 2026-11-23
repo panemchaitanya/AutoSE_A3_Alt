@@ -1,0 +1,5 @@
+{
+  "number": 3,
+  "title": "Add a limit parameter to search()",
+  "body": "`db.search(cond)` always returns every match. When a table has thousands of\ndocuments and I only need the first few (a \"latest 10\" list, a preview,\npagination), I have to materialize the whole result list and slice it\nmyself, which is wasteful.\n\nCould `search` take an optional `limit`?\n\n```python\ndb.search(Query().category == 'book', limit=10)   # first 10 matches only\ndb.search(Query().category == 'book')             # unchanged: all matches\n```\n\nExpected semantics:\n\n- `limit=None` (default) keeps today's behavior - all matches, in document\n  id order.\n- `limit=N` returns at most the first N matches, in document id order.\n- A limit larger than the number of matches just returns all matches.\n\nThanks!"
+}
