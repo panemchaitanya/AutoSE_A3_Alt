@@ -62,15 +62,17 @@ def _safe_path(repo_root, rel):
     return p
 
 
-def _tool_read_file(repo_root, path):
+def _tool_read_file(repo_root, path, start_line=1, end_line=None):
     p = _safe_path(repo_root, path)
     if not p or not os.path.isfile(p):
         return f"ERROR: no such file: {path}"
     with open(p, "r", encoding="utf-8", errors="replace") as f:
         data = f.read()
-    if len(data) > 60000:
-        data = data[:60000] + "\n...[truncated]"
-    return data
+    lines = data.splitlines()
+    start_line = max(1, int(start_line))
+    end_line = min(len(lines), int(end_line) if end_line is not None else start_line + 159, start_line + 159)
+    selected = "\n".join(f"{n}: {lines[n-1]}" for n in range(start_line, end_line+1))
+    return f"File has {len(lines)} lines; showing {start_line}-{end_line}. Request another range if needed.\n" + selected
 
 
 def _tool_list_files(repo_root, path):
@@ -140,9 +142,19 @@ def run_agent(role, model, system_prompt, task, repo_root, usage,
     contents.append({"role": "user", "parts": [{"text": task}]})
 
     transcript = []
+    action_ledger = []
     for step in range(config.MAX_AGENT_STEPS):
         try:
-            reply = gemini.generate(model, system_prompt, contents, usage)
+            # Keep original task, plus recent exact turns, not an LLM summary.
+            # Full transcript remains an artifact. Agents can reread file ranges.
+            sent = contents if len(contents) <= 9 else contents[:1] + contents[-8:]
+            if action_ledger:
+                sent = sent + [{"role":"user","parts":[{"text":
+                    "Exact prior action index (not reasoning):\n" + "\n".join(action_ledger) +
+                    "\nAvoid rereading the same ranges. After enough inspection, implement "
+                    "the design. Saved files are durable. Current step " + str(step) +
+                    " of " + str(config.MAX_AGENT_STEPS) + "."}]}]
+            reply = gemini.generate(model, system_prompt, sent, usage)
         except (gemini.BudgetExhausted, gemini.QuotaExhausted) as e:
             return None, transcript, str(e)
         contents.append({"role": "model", "parts": [{"text": reply}]})
@@ -156,15 +168,37 @@ def run_agent(role, model, system_prompt, task, repo_root, usage,
             continue
 
         kind = action.get("action")
+        action_ledger.append(json.dumps({k:v for k,v in action.items()
+            if k in ("action","path","start_line","end_line")}))
+        print(f"[{role}] step={step} action={kind} calls={usage.calls} "
+              f"tokens={usage.total_tokens}", flush=True)
+        # Persist each completed model reply for interrupted-stage evidence.
+        progress_dir = os.path.join(repo_root, config.ARTIFACTS_DIR)
+        os.makedirs(progress_dir, exist_ok=True)
+        with open(os.path.join(progress_dir, f"progress_{role.lower()}.json"),
+                  "w", encoding="utf-8") as progress:
+            json.dump({"transcript": transcript, "usage": usage.as_dict()}, progress)
         if kind == "finish":
             result = action.get("result")
+            if role == "Developer" and isinstance(result, dict) and not result.get("blocked"):
+                actual = subprocess.run(["git","diff","origin/main","--","tinydb"],
+                    cwd=repo_root,capture_output=True,text=True).stdout
+                if not result.get("files_changed") or not actual.strip():
+                    contents.append({"role":"user","parts":[{"text":
+                        "Finish rejected: no actual source diff exists. Implement the design, "
+                        "edit source using write_file or a short Python command, verify "
+                        "the source diff and build, then finish with files_changed. "
+                        "Do not merely inspect status."}]})
+                    continue
             if not isinstance(result, dict):
                 contents.append({"role": "user", "parts": [{"text":
                     "OBSERVATION: finish requires \"result\" as a JSON object."}]})
                 continue
             return result, transcript, None
         if kind == "read_file":
-            obs = _tool_read_file(repo_root, action.get("path", ""))
+            obs = _tool_read_file(repo_root, action.get("path", ""),
+                                  action.get("start_line", 1),
+                                  action.get("end_line"))
         elif kind == "list_files":
             obs = _tool_list_files(repo_root, action.get("path", "."))
         elif kind == "write_file":
@@ -176,11 +210,30 @@ def run_agent(role, model, system_prompt, task, repo_root, usage,
                 else:
                     obs = _tool_write_file(repo_root, action.get("path", ""),
                                            action["content"])
+        elif kind == "edit_file":
+            if read_only:
+                obs = "ERROR: reviewer cannot edit files"
+            else:
+                path = action.get("path", "")
+                full = _safe_path(repo_root, path)
+                old = action.get("old_text", "")
+                new = action.get("new_text", "")
+                if not full or not os.path.isfile(full) or not old:
+                    obs = "ERROR: edit requires existing file and nonempty old_text"
+                else:
+                    with open(full, encoding="utf-8") as f:
+                        text = f.read()
+                    if text.count(old) != 1:
+                        obs = "ERROR: old_text must match exactly once; read correct range"
+                    else:
+                        obs = _tool_write_file(repo_root, path, text.replace(old, new, 1))
         elif kind == "run_shell":
             obs = _tool_run_shell(repo_root, action.get("command", ""))
         else:
             obs = (f"ERROR: unknown action {kind!r}. Use read_file, "
                    f"list_files, write_file, run_shell or finish.")
+        if len(obs) > 12000:
+            obs = obs[:12000] + "\n[bounded observation; use narrower file ranges or commands]"
         contents.append({"role": "user",
                          "parts": [{"text": f"OBSERVATION:\n{obs}"}]})
 

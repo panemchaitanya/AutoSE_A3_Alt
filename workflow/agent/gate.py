@@ -113,8 +113,8 @@ def main():
         # Preserve completed artifacts/code, but execute the current reviewed
         # harness revision rather than a stale copy on the work branch.
         sh("git", "fetch", "origin", "main")
-        sh("git", "checkout", "origin/main", "--", "workflow/agent")
-        sh("git", "add", "workflow/agent")
+        sh("git", "checkout", "origin/main", "--", "workflow/agent", "workflow/prompts")
+        sh("git", "add", "workflow/agent", "workflow/prompts")
         state = controller.load_state(".")
         if state is None:
             return skip(f"no state on {branch}; cannot continue")
@@ -133,7 +133,7 @@ def main():
     with open(".autose/issue.json", "w", encoding="utf-8") as f:
         json.dump(issue_json, f, indent=2)
     controller.save_state(".", state)
-    sh("git", "add", ".autose", "workflow/agent")
+    sh("git", "add", ".autose", "workflow/agent", "workflow/prompts")
     sh("git", "-c", "user.name=autose-bot", "-c",
        "user.email=autose-bot@users.noreply.github.com",
        "commit", "-m", f"autose: gate ({'start' if entry is None else 'continue -> ' + entry}) for issue #{issue_number}",

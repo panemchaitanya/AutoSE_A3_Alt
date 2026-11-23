@@ -134,3 +134,27 @@ def validate_review_verdict(obj):
         if obj.get("classification") not in ("approach", "code"):
             problems.append("classification must be 'approach' or 'code'")
     return (not problems), problems
+
+
+def baseline_regression_check(repo_root, test_files):
+    """Require generated behavior tests to fail against pinned baseline code.
+
+    Tests run in a temporary git worktree, never with hidden acceptance tests.
+    A collection/import error is not evidence of a behavioral regression.
+    """
+    import tempfile, shutil
+    with tempfile.TemporaryDirectory(prefix="autose-baseline-") as root:
+        base = os.path.join(root, "repo")
+        subprocess.run(["git", "worktree", "add", "--detach", base, "origin/main"],
+                       cwd=repo_root, check=True, capture_output=True)
+        try:
+            for rel in test_files:
+                dest = os.path.join(base, rel)
+                os.makedirs(os.path.dirname(dest), exist_ok=True)
+                shutil.copy2(os.path.join(repo_root, rel), dest)
+            code, out = _run(["python", "-m", "pytest", "-q"] + test_files, base)
+            ok = code == 1 and bool(re.search(r"\b[1-9]\d* failed\b", out))
+            return ok, out
+        finally:
+            subprocess.run(["git", "worktree", "remove", "--force", base],
+                           cwd=repo_root, check=True, capture_output=True)

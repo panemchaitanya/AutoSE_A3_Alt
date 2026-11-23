@@ -40,6 +40,7 @@ class Usage:
         self.total_tokens = prior.get("total_tokens", 0)
         self.calls = prior.get("calls", 0)
         self.fallbacks = prior.get("fallbacks", 0)
+        self.models = prior.get("models", {})
 
     def record(self, metadata):
         self.prompt_tokens += metadata.get("promptTokenCount", 0)
@@ -54,6 +55,7 @@ class Usage:
             "total_tokens": self.total_tokens,
             "calls": self.calls,
             "fallbacks": self.fallbacks,
+            "models": self.models,
         }
 
 
@@ -118,13 +120,26 @@ def response_schema(system_prompt):
         "findings": {"type": "ARRAY", "items": finding},
         "classification": {"type": "STRING", "nullable": True},
     })
+    if "You are the Reviewer agent" in system_prompt:
+        result = obj({
+            "verdict": {"type": "STRING", "enum": ["approve", "request_changes"]},
+            "findings": {"type": "ARRAY", "items": obj({
+                "file": string, "line": {"type": "INTEGER"}, "issue": string,
+                "severity": {"type": "STRING", "enum": ["blocker", "major", "minor"]}},
+                ("file", "line", "issue", "severity"))},
+            "classification": {"type": "STRING", "nullable": True},
+            "summary": string,
+        }, ("verdict", "findings", "classification", "summary"))
     def action(name, fields):
         return obj({"action": {"type": "STRING", "enum": [name]},
                     **fields}, ("action", *fields))
     return {"anyOf": [
         action("list_files", {"path": string}),
-        action("read_file", {"path": string}),
+        obj({"action": {"type":"STRING","enum":["read_file"]}, "path":string,
+             "start_line":{"type":"INTEGER"},"end_line":{"type":"INTEGER"}},
+            ("action","path")),
         action("write_file", {"path": string, "content": string}),
+        action("edit_file", {"path": string, "old_text": string, "new_text": string}),
         action("run_shell", {"command": string}),
         action("finish", {"result": result}),
     ]}
@@ -171,6 +186,7 @@ def generate(model, system_prompt, contents, usage, temperature=0.2):
             try:
                 data = _post(active_model, payload, api_key)
                 usage.record(data.get("usageMetadata", {}))
+                usage.models[active_model] = usage.models.get(active_model, 0) + 1
                 if active_model != model:
                     usage.fallbacks += 1
                 candidates = data.get("candidates") or []
