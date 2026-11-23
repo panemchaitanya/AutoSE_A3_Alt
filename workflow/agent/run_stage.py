@@ -247,7 +247,11 @@ def stage_develop(repo_root, state, issue):
         task = ("Write tests for this specification's acceptance criteria and "
                 "run the full suite.\n\n"
                 f"--- acceptance criteria (from spec.md) ---\n{spec}\n\n"
-                f"--- the change under test (diff) ---\n{diff[:20000]}\n")
+                f"--- the change under test (diff) ---\n{diff[:20000]}\n"
+                "If tests_autose already exists after a failed attempt, inspect "
+                "and retain useful existing tests. Check every acceptance "
+                "criterion, add missing tests, run the suite, then finish. "
+                "Existing files are not proof that the tests pass.")
         result, transcript, err = agent.run_agent(
             "Tester", config.MODEL_TEST, prompts.TEST_SYSTEM, task, repo_root,
             usage)
