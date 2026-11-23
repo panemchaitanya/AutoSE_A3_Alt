@@ -77,6 +77,14 @@
     {
       "event": "operational recovery: no reviewer verdict exists",
       "ts": "2026-11-23T12:56:41.377766+00:00"
+    },
+    {
+      "event": "testing -> running",
+      "ts": "2026-11-23T12:57:17.635599+00:00"
+    },
+    {
+      "event": "testing -> passed",
+      "ts": "2026-11-23T12:57:41.530425+00:00"
     }
   ],
   "issue": 1,
@@ -108,10 +116,10 @@
     }
   },
   "usage": {
-    "calls": 30,
-    "completion_tokens": 10602,
+    "calls": 35,
+    "completion_tokens": 11126,
     "fallbacks": 0,
-    "prompt_tokens": 297977,
-    "total_tokens": 308579
+    "prompt_tokens": 315126,
+    "total_tokens": 326252
   }
 }
