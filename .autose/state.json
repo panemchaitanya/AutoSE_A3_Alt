@@ -29,13 +29,23 @@
     {
       "event": "operational recovery: no reviewer verdict exists",
       "ts": "2026-11-23T13:38:49.957409+00:00"
+    },
+    {
+      "event": "design -> running",
+      "ts": "2026-11-23T13:39:06.291244+00:00"
+    },
+    {
+      "event": "design -> passed",
+      "ts": "2026-11-23T13:39:41.924000+00:00"
     }
   ],
   "issue": 2,
   "review_rounds": 0,
   "stages": {
     "design": {
-      "status": "pending"
+      "artifact": ".autose/artifacts/design.md",
+      "status": "passed",
+      "summary": "Designed the change for numeric operation fallback on missing fields in tinydb/operations.py and specified updates to tests/test_operations.py."
     },
     "implementation": {
       "status": "pending"
@@ -56,10 +66,10 @@
     }
   },
   "usage": {
-    "calls": 5,
-    "completion_tokens": 626,
+    "calls": 13,
+    "completion_tokens": 1619,
     "fallbacks": 0,
-    "prompt_tokens": 24074,
-    "total_tokens": 24700
+    "prompt_tokens": 47595,
+    "total_tokens": 49214
   }
 }
