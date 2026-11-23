@@ -24,13 +24,16 @@ def untrusted(label, text):
 TOOL_CONTRACT = """\
 You work by replying with exactly ONE JSON object per turn. Available actions:
 {"action": "list_files", "path": "<dir>"}
-{"action": "read_file", "path": "<file>"}
+{"action": "read_file", "path": "<file>", "start_line": 1, "end_line": 160}
 {"action": "write_file", "path": "<file>", "content": "<full file content>"}
 {"action": "run_shell", "command": "<whitelisted: pytest, python, grep, find, ls, cat, head, tail, wc, git diff|status|show|log>"}
 {"action": "finish", "result": { ... }}
 
 Rules:
 - One action per reply, no prose outside the JSON.
+- File reads return numbered ranges, max160lines. Request exact ranges.
+- Only original task and last4 action/observation pairs are retained.
+  Reread source when needed; saved files are durable. Do not assume omitted context.
 - write_file always writes the complete file, never a fragment.
 - You may not write under .github/ or workflow/.
 - When done, use finish with the result object described in the task.

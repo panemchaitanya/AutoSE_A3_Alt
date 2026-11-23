@@ -62,15 +62,17 @@ def _safe_path(repo_root, rel):
     return p
 
 
-def _tool_read_file(repo_root, path):
+def _tool_read_file(repo_root, path, start_line=1, end_line=None):
     p = _safe_path(repo_root, path)
     if not p or not os.path.isfile(p):
         return f"ERROR: no such file: {path}"
     with open(p, "r", encoding="utf-8", errors="replace") as f:
         data = f.read()
-    if len(data) > 60000:
-        data = data[:60000] + "\n...[truncated]"
-    return data
+    lines = data.splitlines()
+    start_line = max(1, int(start_line))
+    end_line = min(len(lines), int(end_line) if end_line is not None else start_line + 159, start_line + 159)
+    selected = "\n".join(f"{n}: {lines[n-1]}" for n in range(start_line, end_line+1))
+    return f"File has {len(lines)} lines; showing {start_line}-{end_line}. Request another range if needed.\n" + selected
 
 
 def _tool_list_files(repo_root, path):
@@ -142,7 +144,10 @@ def run_agent(role, model, system_prompt, task, repo_root, usage,
     transcript = []
     for step in range(config.MAX_AGENT_STEPS):
         try:
-            reply = gemini.generate(model, system_prompt, contents, usage)
+            # Keep original task, plus recent exact turns, not an LLM summary.
+            # Full transcript remains an artifact. Agents can reread file ranges.
+            sent = contents if len(contents) <= 9 else contents[:1] + contents[-8:]
+            reply = gemini.generate(model, system_prompt, sent, usage)
         except (gemini.BudgetExhausted, gemini.QuotaExhausted) as e:
             return None, transcript, str(e)
         contents.append({"role": "model", "parts": [{"text": reply}]})
@@ -172,7 +177,9 @@ def run_agent(role, model, system_prompt, task, repo_root, usage,
                 continue
             return result, transcript, None
         if kind == "read_file":
-            obs = _tool_read_file(repo_root, action.get("path", ""))
+            obs = _tool_read_file(repo_root, action.get("path", ""),
+                                  action.get("start_line", 1),
+                                  action.get("end_line"))
         elif kind == "list_files":
             obs = _tool_list_files(repo_root, action.get("path", "."))
         elif kind == "write_file":
@@ -189,6 +196,8 @@ def run_agent(role, model, system_prompt, task, repo_root, usage,
         else:
             obs = (f"ERROR: unknown action {kind!r}. Use read_file, "
                    f"list_files, write_file, run_shell or finish.")
+        if len(obs) > 12000:
+            obs = obs[:12000] + "\n[bounded observation; use narrower file ranges or commands]"
         contents.append({"role": "user",
                          "parts": [{"text": f"OBSERVATION:\n{obs}"}]})
 

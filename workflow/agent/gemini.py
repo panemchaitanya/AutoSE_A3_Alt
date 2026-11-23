@@ -135,7 +135,9 @@ def response_schema(system_prompt):
                     **fields}, ("action", *fields))
     return {"anyOf": [
         action("list_files", {"path": string}),
-        action("read_file", {"path": string}),
+        obj({"action": {"type":"STRING","enum":["read_file"]}, "path":string,
+             "start_line":{"type":"INTEGER"},"end_line":{"type":"INTEGER"}},
+            ("action","path")),
         action("write_file", {"path": string, "content": string}),
         action("run_shell", {"command": string}),
         action("finish", {"result": result}),
