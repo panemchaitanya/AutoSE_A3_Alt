@@ -17,13 +17,23 @@
     {
       "event": "requirements -> passed",
       "ts": "2026-11-23T12:34:52.379357+00:00"
+    },
+    {
+      "event": "design -> running",
+      "ts": "2026-11-23T12:35:06.543564+00:00"
+    },
+    {
+      "event": "design -> passed",
+      "ts": "2026-11-23T12:35:13.331919+00:00"
     }
   ],
   "issue": 5,
   "review_rounds": 0,
   "stages": {
     "design": {
-      "status": "pending"
+      "artifact": ".autose/artifacts/design.md",
+      "status": "passed",
+      "summary": "Designed the implementation plan for deep copy isolation of search and retrieval results in TinyDB to prevent in-place mutation side effects, adhering strictly to all architecture constraints and documentation rules."
     },
     "implementation": {
       "status": "pending"
@@ -44,10 +54,10 @@
     }
   },
   "usage": {
-    "calls": 5,
-    "completion_tokens": 754,
+    "calls": 10,
+    "completion_tokens": 1324,
     "fallbacks": 0,
-    "prompt_tokens": 25636,
-    "total_tokens": 26390
+    "prompt_tokens": 57767,
+    "total_tokens": 59091
   }
 }
