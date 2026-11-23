@@ -25,6 +25,10 @@
     {
       "event": "design -> passed",
       "ts": "2026-11-23T12:36:47.538419+00:00"
+    },
+    {
+      "event": "operational recovery: no reviewer verdict exists",
+      "ts": "2026-11-23T13:25:58.824186+00:00"
     }
   ],
   "issue": 3,
