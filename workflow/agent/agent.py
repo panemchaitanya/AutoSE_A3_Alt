@@ -17,6 +17,7 @@ Hard limits (enforced here, not in the prompt - ADR-009):
 """
 
 import json
+import hashlib
 import os
 import re
 import shlex
@@ -143,7 +144,53 @@ def run_agent(role, model, system_prompt, task, repo_root, usage,
 
     transcript = []
     action_ledger = []
-    for step in range(config.MAX_AGENT_STEPS):
+    start_step = 0
+    # Only preparation roles checkpoint. Reviewer context stays fresh, and
+    # arbitrary developer/tester shell actions are never replayed by this path.
+    checkpoint = None
+    fingerprint = None
+    if role in ("SpecWriter", "Designer") and not read_only:
+        digest = hashlib.sha256()
+        for value in (role, model, system_prompt, task, extra_context or "",
+                      str(config.MAX_AGENT_STEPS)):
+            digest.update(value.encode())
+            digest.update(b"\0")
+        with open(__file__, "rb") as source:
+            digest.update(source.read())
+        for directory, dirs, files in os.walk(os.path.join(repo_root, "tinydb")):
+            dirs[:] = sorted(d for d in dirs if d != "__pycache__")
+            for name in sorted(files):
+                if name.endswith(".py"):
+                    full = os.path.join(directory, name)
+                    digest.update(os.path.relpath(full, repo_root).encode())
+                    with open(full, "rb") as source:
+                        digest.update(source.read())
+        fingerprint = digest.hexdigest()
+        checkpoint = os.path.join(repo_root, config.ARTIFACTS_DIR,
+                                  "conversation_" + role.lower() + ".json")
+        if os.path.isfile(checkpoint):
+            try:
+                with open(checkpoint, encoding="utf-8") as saved:
+                    prior = json.load(saved)
+                if prior.get("fingerprint") == fingerprint:
+                    contents = prior["contents"]
+                    transcript = prior["transcript"]
+                    action_ledger = prior["action_ledger"]
+                    start_step = int(prior["next_step"])
+                    print(f"[{role}] resume conversation at step={start_step}", flush=True)
+            except (ValueError, KeyError, TypeError):
+                pass  # malformed checkpoints never authorize a stage pass
+    for step in range(start_step, config.MAX_AGENT_STEPS):
+        # Save before the next model call, after the previous tool observation.
+        # A provider failure does not discard successful prior model work.
+        if checkpoint:
+            os.makedirs(os.path.dirname(checkpoint), exist_ok=True)
+            temp_checkpoint = checkpoint + ".tmp"
+            with open(temp_checkpoint, "w", encoding="utf-8") as saved:
+                json.dump({"fingerprint": fingerprint, "contents": contents,
+                           "transcript": transcript, "action_ledger": action_ledger,
+                           "next_step": step}, saved)
+            os.replace(temp_checkpoint, checkpoint)
         try:
             # Keep original task, plus recent exact turns, not an LLM summary.
             # Full transcript remains an artifact. Agents can reread file ranges.
@@ -194,6 +241,8 @@ def run_agent(role, model, system_prompt, task, repo_root, usage,
                 contents.append({"role": "user", "parts": [{"text":
                     "OBSERVATION: finish requires \"result\" as a JSON object."}]})
                 continue
+            if checkpoint and os.path.exists(checkpoint):
+                os.remove(checkpoint)
             return result, transcript, None
         if kind == "read_file":
             obs = _tool_read_file(repo_root, action.get("path", ""),
@@ -237,6 +286,11 @@ def run_agent(role, model, system_prompt, task, repo_root, usage,
         contents.append({"role": "user",
                          "parts": [{"text": f"OBSERVATION:\n{obs}"}]})
 
+    if checkpoint:
+        with open(checkpoint, "w", encoding="utf-8") as saved:
+            json.dump({"fingerprint": fingerprint, "contents": contents,
+                       "transcript": transcript, "action_ledger": action_ledger,
+                       "next_step": config.MAX_AGENT_STEPS}, saved)
     return None, transcript, f"step cap {config.MAX_AGENT_STEPS} reached"
 
 

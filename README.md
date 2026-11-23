@@ -144,6 +144,8 @@ Saved usage snapshots can be cumulative and overlapping. Do **not** sum every sn
 
 ## Recovery and known limits
 
+Late recovery improvement: [ADR017](architecture/decisions/ADR-017.md) checkpoints exact preparation-role conversations after completed observations, bound to the full contract/task/model/source fingerprint. Reviewer context stays fresh, total step caps survive restarts, and no checks are bypassed. New local baseline/harness invocation: **245 passed**, [recorded output](results/recovery-tests-0010.txt). This post-deadline work is not on-time evidence.
+
 - **503 / UNAVAILABLE:** preserve failure artifacts, use bounded backoff and check provider availability. A short successful probe does not prove a full stage will recover.
 - **429 / quota exhaustion:** stop or wait within free quota. Do not enable billing as a recovery step.
 - **Old checkpoint:** corrected A1 validation invalidates downstream passes unless `a1_bundle_verified` is set by the current checks. Do not set it manually.
