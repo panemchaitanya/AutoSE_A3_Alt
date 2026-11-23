@@ -1,3 +1,7 @@
+# Working run account
+
+Current machine-reconciled index: [hosted-index.md](hosted-index.md), with both repository CSVs. That index supersedes older status snapshots below but preserves them as chronology. At21:55 IST: Alt3/5 posted independent verdicts across recoveries; A3 requirements1/5, fully reviewed0/5. Hidden tests still sealed while coding continues. Support-only owner-directed PR transfers are separate from generated issue PRs, which remain unmerged.
+
 # Runs - links to every Actions run, PR and review
 
 Status: IN PROGRESS. Graded runs land on the submission repository

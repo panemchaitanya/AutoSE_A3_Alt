@@ -1,0 +1,10 @@
+repository,issue,branch_tokens,calls,scope
+AutoSE_A3_Alt,1,326252,35,"branch cumulative, excludes superseded attempts and separate reviewer increments"
+AutoSE_A3_Alt,2,160553,31,"branch cumulative, excludes superseded attempts and separate reviewer increments"
+AutoSE_A3_Alt,3,132445,21,"branch cumulative, excludes superseded attempts and separate reviewer increments"
+AutoSE_A3_Alt,4,477610,66,"branch cumulative, excludes superseded attempts and separate reviewer increments"
+AutoSE_A3_Alt,5,423649,55,"branch cumulative, excludes superseded attempts and separate reviewer increments"
+AutoSE_A3,2,0,0,"branch cumulative, excludes superseded attempts and separate reviewer increments"
+AutoSE_A3,3,0,0,"branch cumulative, excludes superseded attempts and separate reviewer increments"
+AutoSE_A3,4,0,0,"branch cumulative, excludes superseded attempts and separate reviewer increments"
+AutoSE_A3,5,0,0,"branch cumulative, excludes superseded attempts and separate reviewer increments"

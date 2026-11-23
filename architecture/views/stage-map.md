@@ -1,8 +1,10 @@
 # Stage map
 
+Model labels below are original committed defaults. Current variables request3.5-flash-lite for all roles. ADR015 requires full A1 SRS/REGISTER/VALIDATION plus handoff spec, substantive validation and downstream checkpoint invalidation. Earlier requirements passes were testability-only evidence.
+
 | # | Stage | Agent (model) | Inputs the agent sees | Artifact | Check before moving on | Who decides pass/fail |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1 | Requirements | SpecWriter (gemini-3.5-flash-lite) | Prompt: issue title + body; repo read tools remain | `spec.md` | AC lint: every acceptance criterion is given/when/then or measurable, no vague words; LLM judge agrees all criteria are testable | Mechanical lint + judge, recorded in `state.json` |
+| 1 | Requirements | SpecWriter (gemini-3.5-flash-lite) | Prompt: issue title + body; repo read tools remain | `spec.md` plus full A1 bundle | A1 structure + semantic audit; AC lint: every acceptance criterion is given/when/then or measurable, no vague words; LLM judge agrees all criteria are testable | Mechanical lint + judge, recorded in `state.json` |
 | 2 | Design | Designer (gemini-3.5-flash-lite) | `spec.md`, `ARCHITECTURE.md`, repo tools | `design.md` | Every file the plan names exists in the repo or is explicitly marked NEW; plan names files and functions | Mechanical path check + judge |
 | 3 | Implementation | Developer (gemini-3.5-flash) | `design.md`, acceptance criteria, full repo read/write tools | `diff.patch` | `python -m compileall` on changed files + package imports | Mechanical (exit codes) |
 | 4 | Testing | Tester (gemini-3.5-flash-lite) | `spec.md` criteria, `diff.patch`, repo; writes tests, runs pytest | `test_report.md` | New tests and full suite pass (`pytest` exit 0); on failure back to stage 3, max 3 cycles | Mechanical (pytest exit code) |

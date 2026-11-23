@@ -8,8 +8,8 @@ seed:
                     (the anchoring stimulus; authored for this experiment
                     because the seeded PRs have no real pipeline run)
 
-Ground truth: experiment/seeded_prs/spN/expected.json (all defects verified
-behaviorally before this runner existed). No GitHub calls; no secrets in
+Ground truth: experiment/seeded_prs/spN/expected.json. Initial probes were
+not retained; reproducible behavioral verification was added after E2. No GitHub calls; no secrets in
 outputs. Results land in /downloads/a3work/e2/results/.
 
 Usage: GEMINI_API_KEY=... MODEL_REVIEW=... python3 e2_runner.py [sp1 ...]

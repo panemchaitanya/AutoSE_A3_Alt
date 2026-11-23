@@ -1,0 +1,27 @@
+digraph G {
+ graph [rankdir=TB,bgcolor="white",pad="0.2",nodesep="0.24",ranksep="0.3"];
+ node [shape=box,style="rounded,filled",fillcolor="#edf3f1",color="#69978b",fontname="Helvetica",fontsize=11];
+ edge [color="#777777",fontname="Helvetica",fontsize=9];
+ T [label="Owner label/comment\nor authorized dispatch"];
+ G [label="Deterministic gate\nbranch state / budgets / routing"];
+ S [label="SpecWriter\nspec + lint + judge"];
+ D [label="Designer\nplan + paths + judge"];
+ I [label="Developer\nsource diff / compile / import"];
+ X [label="Tester\nnew + full pytest / baseline contrast"];
+ R [label="Scripted release\npytest / gh PR / CI status"];
+ V [label="Reviewer: separate workflow\nfiltered fresh checkout / no push\nposted COMMENT verdict"];
+ H [label="Human decides\nNEVER auto-merge",fillcolor="white"];
+ F [label="Read / exact edit / write / shell\nAgents S,D,I,X call harness tools\nPython arbitrary, not a sandbox",shape=note,fillcolor="#fff6e8"];
+ K [label="Gemini REST client\nJSON schema / retries / usage",shape=note,fillcolor="#fff6e8"];
+ {rank=same;T;G;S;}
+ {rank=same;D;I;X;}
+ {rank=same;R;V;H;}
+ {rank=same;F;K;}
+ T->G->S->D->I->X->R->V->H;
+ X->I[label="max3 cycles"];
+ V->G[label="max2 feedback rounds"];
+ I->F[style=dotted,label="tool actions"];
+ F->K[style=invis];
+ S->K[style=dotted,label="model calls (5 roles)",constraint=false];
+ V->K[style=dotted,constraint=false];
+}

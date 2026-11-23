@@ -1,3 +1,7 @@
+# AutoSE A3 working submission
+
+**Working snapshot, 23 November 2026 21:59 IST. Not complete.** [Report](report.pdf) and [captioned recovery walkthrough](demo.mp4) preserve the current evidence. The video uses actual Alt issue3 across recovery attempts, not an uninterrupted A3 run. Hidden tests remain sealed while coding continues. Earlier requirements stages checked testability but did not establish full A1 artifact compliance; corrected full-skill output/validation reruns are required. See ADR015 and the report. Generated issue PRs stay unmerged.
+
 # AutoSE A3 - Architecting an Agentic SDLC Workflow
 
 AutoSE course, Assignment 3. A GitHub Actions workflow that turns an issue

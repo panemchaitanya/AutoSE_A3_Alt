@@ -1,5 +1,7 @@
 # Component view
 
+Model names in the original diagram are historical committed defaults. Current repo variables select3.5-flash-lite for all roles. Full A1 output/validation correction is ADR015; old stage checkpoints are historical, not proof of full compliance.
+
 The system is two GitHub Actions workflows, five LLM agent roles, one scripted
 release step, a deterministic controller, and a state file on the work branch.
 

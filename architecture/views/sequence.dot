@@ -1,0 +1,15 @@
+digraph G {
+ graph [rankdir=LR,bgcolor="white",pad="0.2",nodesep="0.3",ranksep="0.27"];
+ node [shape=box,style="rounded,filled",fillcolor="#edf3f1",color="#69978b",fontname="Helvetica",fontsize=11];
+ edge [color="#777777",fontname="Helvetica",fontsize=10];
+ A [label="Issue 3: search(limit)\nRequirements + design passed in earlier attempt"];
+ B [label="Failed implementation/testing attempts retained\nExact generated files replayed locally: 231 passed\nLocal pass was NOT a hosted pass"];
+ C [label="Operational resume 45197403640\nDefinite post-ORION-key dispatch"];
+ D [label="Requirements + design skipped as passed\nHosted implementation + testing passed"];
+ E [label="Release reran pytest and opened PR 8\nNo merge"];
+ F [label="Independent review 45199274608\nFresh filtered source; own prompt"];
+ H [label="Posted COMMENT approve: 6023844081\nNot formal GitHub approval"];
+ {rank=same;A;B;C;}
+ {rank=same;D;E;F;H;}
+ A->B->C->D->E->F->H;
+}
