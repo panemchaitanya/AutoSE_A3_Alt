@@ -57,6 +57,22 @@
     {
       "event": "operational recovery: no reviewer verdict exists",
       "ts": "2026-11-23T12:52:38.176613+00:00"
+    },
+    {
+      "event": "implementation -> running",
+      "ts": "2026-11-23T12:53:11.556067+00:00"
+    },
+    {
+      "event": "implementation -> passed",
+      "ts": "2026-11-23T12:53:27.987296+00:00"
+    },
+    {
+      "event": "testing -> running",
+      "ts": "2026-11-23T12:53:27.989844+00:00"
+    },
+    {
+      "event": "testing -> passed",
+      "ts": "2026-11-23T12:53:44.411928+00:00"
     }
   ],
   "issue": 1,
@@ -68,8 +84,8 @@
       "summary": "Designed the change to support string document IDs in update() and remove() operations by normalizing requested doc_ids with document_id_class."
     },
     "implementation": {
-      "status": "pending",
-      "summary": "Implemented support for string document IDs in Table.update() and Table.remove() by normalizing requested doc_ids through self.document_id_class."
+      "status": "passed",
+      "summary": "Implemented string document ID normalization in Table.update() and Table.remove() by coercing requested doc_ids via self.document_id_class(doc_id), matching the behavior of Table.get() and fulfilling all acceptance criteria."
     },
     "release": {
       "status": "pending"
@@ -84,14 +100,14 @@
     },
     "testing": {
       "artifact": ".autose/artifacts/test_report.md",
-      "status": "pending"
+      "status": "passed"
     }
   },
   "usage": {
-    "calls": 23,
-    "completion_tokens": 9972,
+    "calls": 30,
+    "completion_tokens": 10602,
     "fallbacks": 0,
-    "prompt_tokens": 257178,
-    "total_tokens": 267150
+    "prompt_tokens": 297977,
+    "total_tokens": 308579
   }
 }
