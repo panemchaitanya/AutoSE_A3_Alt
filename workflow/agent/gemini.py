@@ -19,6 +19,7 @@ import urllib.request
 import config
 
 API_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
+_LAST_REQUEST = 0.0
 
 
 class QuotaExhausted(Exception):
@@ -57,6 +58,9 @@ class Usage:
 
 
 def _post(model, payload, api_key):
+    global _LAST_REQUEST
+    time.sleep(max(0.0, 5.0 - (time.monotonic() - _LAST_REQUEST)))
+    _LAST_REQUEST = time.monotonic()
     url = f"{API_BASE}/{model}:generateContent"
     req = urllib.request.Request(
         url,

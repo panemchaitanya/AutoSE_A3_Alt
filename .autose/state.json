@@ -29,10 +29,14 @@
     {
       "event": "design -> passed",
       "ts": "2026-11-23T12:44:47.204573+00:00"
+    },
+    {
+      "event": "continue requested -> re-enter at implementation",
+      "ts": "2026-11-23T12:47:38.696208+00:00"
     }
   ],
   "issue": 1,
-  "review_rounds": 0,
+  "review_rounds": 1,
   "stages": {
     "design": {
       "artifact": ".autose/artifacts/design.md",
