@@ -119,6 +119,17 @@ responding models and fallbacks are reported separately where evidence
 exists. The later ORION key route was verified free-tier before use; it is
 an account change within the same provider, not a paid fallback.
 
+### E1b - Exploratory matched availability probe (not original E1)
+
+After the original E1 failed to isolate model quality, the identical Developer system prompt, JSON schema, 512-output-token cap, temperature 0.2 and one read-file probe task were submitted serially to two newly verified-free model routes on the same ORION project. This was an exploratory follow-up, not a preregistered replacement or full coding comparison. No fallback was allowed.
+
+| Requested model | HTTP outcome | Measured response seconds | Completed action |
+| --- | --- | --- | --- |
+| gemini-3.8-flash |503 UNAVAILABLE|0.35|none|
+| gemini-4-hydrogen |503 UNAVAILABLE|0.52|none|
+
+Evidence: `results/probes/new-free-model-probes.json`. One trial per route cannot measure general availability, quality or relative speed. The observed result supports bounded backoff rather than further immediate model rotation for this incident. Original E1 quality comparison remains incomplete. No usage metadata was returned for these error responses, so zero charged tokens is not inferred from missing metadata.
+
 ### E2 - Reviewer context isolation (tests ADR-003/ADR-008)
 
 Setup: five local seeded PR-style diffs, each carrying one planted defect (`experiment/seeded_prs/`, ground truth in each `expected.json`). Initial behavioral probes were not retained; a reproducible verification script was added and run after E2. All five defect demonstrations passed then. This is post-experiment validation, not a preserved pre-experiment record. The Reviewer role used its system prompt and then-current harness to review each seed twice, locally. Later hosted isolation/schema fixes mean this is not a full validation of the final hosted boundary:
@@ -167,7 +178,7 @@ recorded in section 6 rather than explained away.
 
 ## 4. Results
 
-Working evidence snapshot at 22:13 IST, 23 November 2026. Incomplete, not a final-completion claim. Hidden tests remain sealed while valid autonomous runs continue.
+Working evidence snapshot at 22:24 IST, 23 November 2026. Incomplete, not a final-completion claim. Hidden tests remain sealed while valid autonomous runs continue.
 
 | Stage reached across recoveries | Alt issues passed /5 | A3 issues passed /5 |
 | --- | --- | --- |
@@ -182,7 +193,9 @@ These are per-issue achieved-stage counts, not per-attempt success rates or unin
 
 Alt issue 4's earlier implementation checkpoint was invalidated: no source diff and a syntax-invalid test stub. Subsequent real-diff gates rejected read-only Developer runs despite claimed file changes. Issue 5 also exhausted 40 steps reading without editing. These are execution failures, not only provider outages. Exact-block editing and baseline-regression checks were added afterward, with no completed issue trial yet.
 
-At 21:32 the student authorized transfer before Alt completion. Protected owner-directed setup PR 1 imported the partial authored tree into A3; PR 7 transferred support corrections. Generated issue PRs were never merged. A3 issues 2-6 correspond to Alt 1-5. Its first four own runs failed requirements. Issue 6 then passed requirements and, on recovery, design; implementation then failed 503. Corrected-contract requirements reruns for issues 2-4 failed 503; issue 5 is now active. These were under the historical single-output requirements contract, not verified full-A1 compliance. Alt successes are not A3 results. Links and attempt logs are in `results/runs.md` and repository-specific CSVs.
+At 21:32 the student authorized transfer before Alt completion. Protected owner-directed setup PR 1 imported the partial authored tree into A3; PR 7 transferred support corrections. Generated issue PRs were never merged. A3 issues 2-6 correspond to Alt 1-5. Its first four own runs failed requirements. Issue 6 then passed requirements and, on recovery, design; implementation then failed 503. All five corrected-contract A3 requirements attempts failed actual provider HTTP 503 UNAVAILABLE/high-demand. Some successful responses preceded failure. A corrected Alt issue 1 attempt is queued. After that trial, repeated identical failures will receive bounded 20-minute backoff, not rapid issue rotation. The earlier requirement/design passes used the historical single-output contract and are not verified full-A1 compliance. Alt successes are not A3 results. Links and attempt logs are in `results/runs.md` and repository-specific CSVs.
+
+The terminal evidence distinguishes provider unavailability from earlier harness defects: all five corrected failures include provider HTTP 503 bodies; none has a terminal local schema-validation error. Two additional verified-free model schema probes also returned 503. This does not prove request shape is irrelevant, but there is no new client defect signal justifying another speculative rewrite.
 
 Token accounting is incomplete. Latest Alt branch cumulative snapshots total 1,520,509 tokens across 208 calls. This is not lifetime usage: it excludes superseded attempts and independent reviewer increments. E2's 10 successful local review records total 597,542 tokens; these are separate local calls. Earlier interrupted/probe usage is not fully retained. Neither summing repeated artifact snapshots nor calling these values a complete total is valid. Free-tier use only; no paid billing was enabled.
 
@@ -246,7 +259,7 @@ validated SHA.
    miscalibrated judge can block a good stage; the judge/model agreement
    data in the transcripts is the evidence offered.
 6. **The reviewer is from the same model family as the implementer.**
-   Independence is enforced by context isolation and permissions, not by
+   Independence is intended through context isolation and permissions, subject to the documented README flaw, not by
    model diversity; correlated blind spots remain possible (future work:
    cross-provider reviewer).
 

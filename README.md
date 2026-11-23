@@ -1,3 +1,5 @@
+> 22:24 IST: all five corrected-A1 A3 attempts failed requirements with provider HTTP503 UNAVAILABLE/high-demand responses. No corrected-contract complete issue. A corrected Alt trial continues; repeated identical failures will use bounded backoff. The incomplete snapshot remains usable while full-completion work continues. Hidden tests are still sealed.
+
 > Correction at 22:13 IST: historical Alt COMMENT reviews were not fully independent because assignment README exposed pipeline reasoning. ADR016 closes that path; corrected-boundary reviews completed: zero. Earlier three verdicts remain real historical evidence, not full-compliance results. New probes on verified-free3.8-flash and4-hydrogen also returned503; no paid fallback used.
 
 # AutoSE A3 working submission

@@ -1,3 +1,5 @@
+> 22:24 status: all five corrected-A1 A3 attempts failed requirements503. No current-contract complete issue. Recovery diagnosis is in recovery-diagnosis.json. Bounded provider backoff follows the current Alt trial if it fails identically; no success is inferred from repeating requests.
+
 > 22:13 correction: historical Alt reviews are not fully independent because assignment README exposed reasoning. ADR016 excludes it for future reviews. Corrected-boundary reviewed count is zero in both repos. Corrected full-A1 reruns are also required; older achieved-stage results remain historical only.
 
 # Working run account

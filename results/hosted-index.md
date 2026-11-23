@@ -1,6 +1,6 @@
 # Captured hosted run index
 
-Snapshot: 2026-11-23T22:00:14+05:30. Not a completion claim. Every recorded run is listed, including failures and CI. Agent-stage achieved counts are separate from per-attempt outcomes. Hidden tests remain withheld during autonomous attempts.
+Snapshot: 2026-11-23T22:24:21+05:30. Not a completion claim. Every recorded run is listed, including failures and CI. Agent-stage achieved counts are separate from per-attempt outcomes. Hidden tests remain withheld during autonomous attempts.
 
 ## AutoSE_A3_Alt
 
@@ -141,22 +141,40 @@ Snapshot: 2026-11-23T22:00:14+05:30. Not a completion claim. Every recorded run 
 |[45211614113](https://github.com/panemchaitanya/AutoSE_A3_Alt/actions/runs/45211614113)|autose|completed|failure|2026-11-23T16:00:44Z|
 |[45212840425](https://github.com/panemchaitanya/AutoSE_A3_Alt/actions/runs/45212840425)|ci|completed|success|2026-11-23T16:07:07Z|
 |[45212840302](https://github.com/panemchaitanya/AutoSE_A3_Alt/actions/runs/45212840302)|Python CI|completed|success|2026-11-23T16:07:07Z|
-|[45216052776](https://github.com/panemchaitanya/AutoSE_A3_Alt/actions/runs/45216052776)|Python CI|queued|pending|2026-11-23T16:23:59Z|
+|[45216052776](https://github.com/panemchaitanya/AutoSE_A3_Alt/actions/runs/45216052776)|Python CI|completed|success|2026-11-23T16:23:59Z|
 |[45216111980](https://github.com/panemchaitanya/AutoSE_A3_Alt/actions/runs/45216111980)|ci|completed|success|2026-11-23T16:24:18Z|
-|[45216115148](https://github.com/panemchaitanya/AutoSE_A3_Alt/actions/runs/45216115148)|Python CI|queued|pending|2026-11-23T16:24:19Z|
+|[45216115148](https://github.com/panemchaitanya/AutoSE_A3_Alt/actions/runs/45216115148)|Python CI|completed|success|2026-11-23T16:24:19Z|
 |[45216115393](https://github.com/panemchaitanya/AutoSE_A3_Alt/actions/runs/45216115393)|ci|completed|success|2026-11-23T16:24:20Z|
-|[45216468787](https://github.com/panemchaitanya/AutoSE_A3_Alt/actions/runs/45216468787)|Python CI|queued|pending|2026-11-23T16:26:09Z|
+|[45216468787](https://github.com/panemchaitanya/AutoSE_A3_Alt/actions/runs/45216468787)|Python CI|completed|success|2026-11-23T16:26:09Z|
 |[45216514735](https://github.com/panemchaitanya/AutoSE_A3_Alt/actions/runs/45216514735)|Python CI|queued|pending|2026-11-23T16:26:23Z|
 |[45216514515](https://github.com/panemchaitanya/AutoSE_A3_Alt/actions/runs/45216514515)|ci|completed|success|2026-11-23T16:26:23Z|
 |[45216512247](https://github.com/panemchaitanya/AutoSE_A3_Alt/actions/runs/45216512247)|ci|completed|success|2026-11-23T16:26:23Z|
-|[45216776948](https://github.com/panemchaitanya/AutoSE_A3_Alt/actions/runs/45216776948)|Python CI|queued|pending|2026-11-23T16:27:46Z|
-|[45216830942](https://github.com/panemchaitanya/AutoSE_A3_Alt/actions/runs/45216830942)|Python CI|queued|pending|2026-11-23T16:28:03Z|
+|[45216776948](https://github.com/panemchaitanya/AutoSE_A3_Alt/actions/runs/45216776948)|Python CI|completed|success|2026-11-23T16:27:46Z|
+|[45216830942](https://github.com/panemchaitanya/AutoSE_A3_Alt/actions/runs/45216830942)|Python CI|completed|success|2026-11-23T16:28:03Z|
 |[45216849219](https://github.com/panemchaitanya/AutoSE_A3_Alt/actions/runs/45216849219)|ci|completed|success|2026-11-23T16:28:08Z|
 |[45216854200](https://github.com/panemchaitanya/AutoSE_A3_Alt/actions/runs/45216854200)|Python CI|queued|pending|2026-11-23T16:28:10Z|
 |[45216854197](https://github.com/panemchaitanya/AutoSE_A3_Alt/actions/runs/45216854197)|ci|completed|success|2026-11-23T16:28:10Z|
+|[45217337615](https://github.com/panemchaitanya/AutoSE_A3_Alt/actions/runs/45217337615)|Python CI|completed|success|2026-11-23T16:30:46Z|
+|[45217490154](https://github.com/panemchaitanya/AutoSE_A3_Alt/actions/runs/45217490154)|ci|completed|success|2026-11-23T16:31:34Z|
+|[45217497606](https://github.com/panemchaitanya/AutoSE_A3_Alt/actions/runs/45217497606)|Python CI|queued|pending|2026-11-23T16:31:36Z|
+|[45217497491](https://github.com/panemchaitanya/AutoSE_A3_Alt/actions/runs/45217497491)|ci|completed|success|2026-11-23T16:31:36Z|
+|[45219354962](https://github.com/panemchaitanya/AutoSE_A3_Alt/actions/runs/45219354962)|ci|completed|success|2026-11-23T16:41:34Z|
+|[45219359941](https://github.com/panemchaitanya/AutoSE_A3_Alt/actions/runs/45219359941)|Python CI|queued|pending|2026-11-23T16:41:36Z|
+|[45219362473](https://github.com/panemchaitanya/AutoSE_A3_Alt/actions/runs/45219362473)|ci|completed|success|2026-11-23T16:41:37Z|
+|[45219516827](https://github.com/panemchaitanya/AutoSE_A3_Alt/actions/runs/45219516827)|Python CI|queued|pending|2026-11-23T16:42:28Z|
+|[45219805541](https://github.com/panemchaitanya/AutoSE_A3_Alt/actions/runs/45219805541)|Python CI|queued|pending|2026-11-23T16:44:01Z|
+|[45219859761](https://github.com/panemchaitanya/AutoSE_A3_Alt/actions/runs/45219859761)|ci|completed|success|2026-11-23T16:44:19Z|
+|[45219863035](https://github.com/panemchaitanya/AutoSE_A3_Alt/actions/runs/45219863035)|Python CI|queued|pending|2026-11-23T16:44:20Z|
+|[45219862766](https://github.com/panemchaitanya/AutoSE_A3_Alt/actions/runs/45219862766)|ci|completed|success|2026-11-23T16:44:20Z|
+|[45221324517](https://github.com/panemchaitanya/AutoSE_A3_Alt/actions/runs/45221324517)|autose|completed|failure|2026-11-23T16:52:12Z|
+|[45221388448](https://github.com/panemchaitanya/AutoSE_A3_Alt/actions/runs/45221388448)|ci|completed|action_required|2026-11-23T16:52:33Z|
+|[45221650853](https://github.com/panemchaitanya/AutoSE_A3_Alt/actions/runs/45221650853)|ci|completed|action_required|2026-11-23T16:53:59Z|
 
 ### Pull requests and posted reviews
 
+- PR14: https://github.com/panemchaitanya/AutoSE_A3_Alt/pull/14 ; state=closed; merged_at=2026-11-23T16:44:18Z
+- PR13: https://github.com/panemchaitanya/AutoSE_A3_Alt/pull/13 ; state=closed; merged_at=2026-11-23T16:41:34Z
+- PR12: https://github.com/panemchaitanya/AutoSE_A3_Alt/pull/12 ; state=closed; merged_at=2026-11-23T16:31:33Z
 - PR11: https://github.com/panemchaitanya/AutoSE_A3_Alt/pull/11 ; state=closed; merged_at=2026-11-23T16:28:07Z
 - PR10: https://github.com/panemchaitanya/AutoSE_A3_Alt/pull/10 ; state=closed; merged_at=2026-11-23T16:26:20Z
 - PR9: https://github.com/panemchaitanya/AutoSE_A3_Alt/pull/9 ; state=closed; merged_at=2026-11-23T16:24:17Z
@@ -185,7 +203,7 @@ Snapshot: 2026-11-23T22:00:14+05:30. Not a completion claim. Every recorded run 
 |[45214082918](https://github.com/panemchaitanya/AutoSE_A3/actions/runs/45214082918)|autose|completed|failure|2026-11-23T16:13:38Z|
 |[45214574847](https://github.com/panemchaitanya/AutoSE_A3/actions/runs/45214574847)|autose|completed|failure|2026-11-23T16:16:11Z|
 |[45215139554](https://github.com/panemchaitanya/AutoSE_A3/actions/runs/45215139554)|autose|completed|failure|2026-11-23T16:19:10Z|
-|[45216056753](https://github.com/panemchaitanya/AutoSE_A3/actions/runs/45216056753)|Python CI|queued|pending|2026-11-23T16:24:01Z|
+|[45216056753](https://github.com/panemchaitanya/AutoSE_A3/actions/runs/45216056753)|Python CI|completed|success|2026-11-23T16:24:01Z|
 |[45216132892](https://github.com/panemchaitanya/AutoSE_A3/actions/runs/45216132892)|ci|completed|success|2026-11-23T16:24:25Z|
 |[45216135248](https://github.com/panemchaitanya/AutoSE_A3/actions/runs/45216135248)|Python CI|queued|pending|2026-11-23T16:24:26Z|
 |[45216135037](https://github.com/panemchaitanya/AutoSE_A3/actions/runs/45216135037)|ci|completed|success|2026-11-23T16:24:26Z|
@@ -199,10 +217,29 @@ Snapshot: 2026-11-23T22:00:14+05:30. Not a completion claim. Every recorded run 
 |[45216865918](https://github.com/panemchaitanya/AutoSE_A3/actions/runs/45216865918)|ci|completed|success|2026-11-23T16:28:13Z|
 |[45216874520](https://github.com/panemchaitanya/AutoSE_A3/actions/runs/45216874520)|ci|completed|success|2026-11-23T16:28:16Z|
 |[45216874419](https://github.com/panemchaitanya/AutoSE_A3/actions/runs/45216874419)|Python CI|queued|pending|2026-11-23T16:28:16Z|
-|[45217079148](https://github.com/panemchaitanya/AutoSE_A3/actions/runs/45217079148)|autose|in_progress|pending|2026-11-23T16:29:23Z|
+|[45217079148](https://github.com/panemchaitanya/AutoSE_A3/actions/runs/45217079148)|autose|completed|failure|2026-11-23T16:29:23Z|
+|[45217346858](https://github.com/panemchaitanya/AutoSE_A3/actions/runs/45217346858)|Python CI|queued|pending|2026-11-23T16:30:49Z|
+|[45217511968](https://github.com/panemchaitanya/AutoSE_A3/actions/runs/45217511968)|ci|completed|success|2026-11-23T16:31:41Z|
+|[45217518500](https://github.com/panemchaitanya/AutoSE_A3/actions/runs/45217518500)|Python CI|queued|pending|2026-11-23T16:31:43Z|
+|[45217518365](https://github.com/panemchaitanya/AutoSE_A3/actions/runs/45217518365)|ci|completed|success|2026-11-23T16:31:43Z|
+|[45217653305](https://github.com/panemchaitanya/AutoSE_A3/actions/runs/45217653305)|autose|completed|failure|2026-11-23T16:32:26Z|
+|[45218907575](https://github.com/panemchaitanya/AutoSE_A3/actions/runs/45218907575)|autose|completed|failure|2026-11-23T16:39:08Z|
+|[45219343701](https://github.com/panemchaitanya/AutoSE_A3/actions/runs/45219343701)|Python CI|queued|pending|2026-11-23T16:41:31Z|
+|[45219375075](https://github.com/panemchaitanya/AutoSE_A3/actions/runs/45219375075)|ci|completed|success|2026-11-23T16:41:41Z|
+|[45219379003](https://github.com/panemchaitanya/AutoSE_A3/actions/runs/45219379003)|ci|completed|success|2026-11-23T16:41:42Z|
+|[45219378987](https://github.com/panemchaitanya/AutoSE_A3/actions/runs/45219378987)|Python CI|queued|pending|2026-11-23T16:41:42Z|
+|[45219559491](https://github.com/panemchaitanya/AutoSE_A3/actions/runs/45219559491)|autose|completed|failure|2026-11-23T16:42:41Z|
+|[45219811090](https://github.com/panemchaitanya/AutoSE_A3/actions/runs/45219811090)|Python CI|queued|pending|2026-11-23T16:44:03Z|
+|[45219876525](https://github.com/panemchaitanya/AutoSE_A3/actions/runs/45219876525)|ci|completed|success|2026-11-23T16:44:25Z|
+|[45219880797](https://github.com/panemchaitanya/AutoSE_A3/actions/runs/45219880797)|Python CI|queued|pending|2026-11-23T16:44:26Z|
+|[45219880628](https://github.com/panemchaitanya/AutoSE_A3/actions/runs/45219880628)|ci|completed|success|2026-11-23T16:44:26Z|
+|[45220035394](https://github.com/panemchaitanya/AutoSE_A3/actions/runs/45220035394)|autose|completed|failure|2026-11-23T16:45:15Z|
 
 ### Pull requests and posted reviews
 
+- PR13: https://github.com/panemchaitanya/AutoSE_A3/pull/13 ; state=closed; merged_at=2026-11-23T16:44:23Z
+- PR12: https://github.com/panemchaitanya/AutoSE_A3/pull/12 ; state=closed; merged_at=2026-11-23T16:41:39Z
+- PR11: https://github.com/panemchaitanya/AutoSE_A3/pull/11 ; state=closed; merged_at=2026-11-23T16:31:41Z
 - PR10: https://github.com/panemchaitanya/AutoSE_A3/pull/10 ; state=closed; merged_at=2026-11-23T16:28:13Z
 - PR9: https://github.com/panemchaitanya/AutoSE_A3/pull/9 ; state=closed; merged_at=2026-11-23T16:26:27Z
 - PR8: https://github.com/panemchaitanya/AutoSE_A3/pull/8 ; state=closed; merged_at=2026-11-23T16:24:23Z

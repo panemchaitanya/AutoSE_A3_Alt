@@ -1,0 +1,27 @@
+repository,run_id,max_cumulative_tokens,calls,prompt_tokens,completion_tokens,source_local_evidence,scope
+AutoSE_A3_Alt,45204532412,188564,26,186409,2155,AutoSE_A3_Alt/45204532412/artifact-14832913168/usage.json,max observed cumulative branch snapshot in run; do not sum across recovery runs
+AutoSE_A3_Alt,45199798143,181265,23,179231,2034,AutoSE_A3_Alt/45199798143/artifact-14831092718/progress_tester.json,max observed cumulative branch snapshot in run; do not sum across recovery runs
+AutoSE_A3_Alt,45207773875,423649,55,420914,2735,AutoSE_A3_Alt/45207773875/artifact-14834816964/usage.json,max observed cumulative branch snapshot in run; do not sum across recovery runs
+AutoSE_A3_Alt,45211614113,423649,55,420914,2735,AutoSE_A3_Alt/45211614113/artifact-14837235413/usage.json,max observed cumulative branch snapshot in run; do not sum across recovery runs
+AutoSE_A3_Alt,45201810975,94107,15,92696,1411,AutoSE_A3_Alt/45201810975/artifact-14832950183/usage.json,max observed cumulative branch snapshot in run; do not sum across recovery runs
+AutoSE_A3_Alt,45202418050,183599,24,181544,2055,AutoSE_A3_Alt/45202418050/artifact-14831837772/usage.json,max observed cumulative branch snapshot in run; do not sum across recovery runs
+AutoSE_A3_Alt,45210458790,477610,66,473907,3703,AutoSE_A3_Alt/45210458790/artifact-14836611419/usage.json,max observed cumulative branch snapshot in run; do not sum across recovery runs
+AutoSE_A3_Alt,45206324141,358043,48,355184,2859,AutoSE_A3_Alt/45206324141/artifact-14835026183/usage.json,max observed cumulative branch snapshot in run; do not sum across recovery runs
+AutoSE_A3_Alt,45194826873,68930,13,67482,1448,AutoSE_A3_Alt/45194826873/artifact-14828965541/progress_developer.json,max observed cumulative branch snapshot in run; do not sum across recovery runs
+AutoSE_A3_Alt,45192314649,146442,18,144562,1880,AutoSE_A3_Alt/45192314649/artifact-14826493939/progress_developer.json,max observed cumulative branch snapshot in run; do not sum across recovery runs
+AutoSE_A3_Alt,45203055767,147503,23,145823,1680,AutoSE_A3_Alt/45203055767/artifact-14831554293/progress_tester.json,max observed cumulative branch snapshot in run; do not sum across recovery runs
+AutoSE_A3_Alt,45196194239,74245,12,72901,1344,AutoSE_A3_Alt/45196194239/artifact-14827409525/progress_developer.json,max observed cumulative branch snapshot in run; do not sum across recovery runs
+AutoSE_A3_Alt,45197403640,132445,21,130678,1767,AutoSE_A3_Alt/45197403640/artifact-14831500225/progress_tester.json,max observed cumulative branch snapshot in run; do not sum across recovery runs
+AutoSE_A3_Alt,45205859843,211375,31,208596,2779,AutoSE_A3_Alt/45205859843/artifact-14833258540/progress_tester.json,max observed cumulative branch snapshot in run; do not sum across recovery runs
+AutoSE_A3_Alt,45199274608,132445,21,130678,1767,AutoSE_A3_Alt/45199274608/artifact-14831276044/progress_tester.json,max observed cumulative branch snapshot in run; do not sum across recovery runs
+AutoSE_A3_Alt,45209410083,450606,61,447063,3543,AutoSE_A3_Alt/45209410083/artifact-14836500147/usage.json,max observed cumulative branch snapshot in run; do not sum across recovery runs
+AutoSE_A3,45214082918,0,0,0,0,AutoSE_A3/45214082918/artifact-14837447163/usage.json,max observed cumulative branch snapshot in run; do not sum across recovery runs
+AutoSE_A3,45219559491,6459,1,5798,661,AutoSE_A3/45219559491/artifact-14838169822/usage.json,max observed cumulative branch snapshot in run; do not sum across recovery runs
+AutoSE_A3,45217653305,11942,2,11877,65,AutoSE_A3/45217653305/artifact-14839497455/usage.json,max observed cumulative branch snapshot in run; do not sum across recovery runs
+AutoSE_A3,45218907575,35012,4,33531,1481,AutoSE_A3/45218907575/artifact-14837664901/usage.json,max observed cumulative branch snapshot in run; do not sum across recovery runs
+AutoSE_A3,45214574847,6459,1,5798,661,AutoSE_A3/45214574847/artifact-14836664855/usage.json,max observed cumulative branch snapshot in run; do not sum across recovery runs
+AutoSE_A3,45215139554,33310,7,32819,491,AutoSE_A3/45215139554/artifact-14838995873/usage.json,max observed cumulative branch snapshot in run; do not sum across recovery runs
+AutoSE_A3,45216185962,78213,18,76840,1373,AutoSE_A3/45216185962/artifact-14838117872/usage.json,max observed cumulative branch snapshot in run; do not sum across recovery runs
+AutoSE_A3,45212288189,0,0,0,0,AutoSE_A3/45212288189/artifact-14836227883/usage.json,max observed cumulative branch snapshot in run; do not sum across recovery runs
+AutoSE_A3,45217079148,5952,1,5933,19,AutoSE_A3/45217079148/artifact-14837909685/usage.json,max observed cumulative branch snapshot in run; do not sum across recovery runs
+AutoSE_A3,45212768630,0,0,0,0,AutoSE_A3/45212768630/artifact-14836373739/usage.json,max observed cumulative branch snapshot in run; do not sum across recovery runs

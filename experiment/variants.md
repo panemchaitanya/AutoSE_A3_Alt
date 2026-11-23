@@ -56,3 +56,14 @@ recoveries reached review for issues1/2, but this cannot isolate model
 quality. ADR006 is superseded provisionally by012 for availability, not
 proved quality. Preserve all failed runs and distinguish responding model
 from requested primary and fallback.
+
+## E1b exploratory matched availability follow-up,22:12 IST
+
+Identical Developer prompt/schema/task,512output cap and temperature0.2,
+same ORION free project, serial one-trial calls, no fallback. Requested
+3.8-flash and4-hydrogen both returned actual HTTP503 UNAVAILABLE in0.35s
+and0.52s. This is an exploratory availability contrast, not a completed
+replacement for original E1 coding-quality experiment. It supports bounded
+backoff for this incident, not a model-quality conclusion. Raw sanitized
+responses in results/probes/new-free-model-probes.json; verified-free source
+https://ai.google.dev/gemini-api/docs/pricing read22:10 IST.

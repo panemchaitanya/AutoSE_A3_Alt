@@ -1,0 +1,46 @@
+{
+  "scope": "corrected A1 A3 attempts; cumulative usage not attempt totals",
+  "runs": [
+    {
+      "run_id": "45217079148",
+      "http503": true,
+      "provider_UNAVAILABLE": true,
+      "provider_high_demand": true,
+      "recorded_cumulative_calls": 1,
+      "recorded_cumulative_tokens": 5952
+    },
+    {
+      "run_id": "45217653305",
+      "http503": true,
+      "provider_UNAVAILABLE": true,
+      "provider_high_demand": true,
+      "recorded_cumulative_calls": 2,
+      "recorded_cumulative_tokens": 11942
+    },
+    {
+      "run_id": "45218907575",
+      "http503": true,
+      "provider_UNAVAILABLE": true,
+      "provider_high_demand": true,
+      "recorded_cumulative_calls": 4,
+      "recorded_cumulative_tokens": 35012
+    },
+    {
+      "run_id": "45219559491",
+      "http503": true,
+      "provider_UNAVAILABLE": true,
+      "provider_high_demand": true,
+      "recorded_cumulative_calls": 1,
+      "recorded_cumulative_tokens": 6459
+    },
+    {
+      "run_id": "45220035394",
+      "http503": true,
+      "provider_UNAVAILABLE": true,
+      "provider_high_demand": true,
+      "recorded_cumulative_calls": 19,
+      "recorded_cumulative_tokens": 84055
+    }
+  ],
+  "conclusion": "All terminal artifacts retain actual provider HTTP503 UNAVAILABLE high-demand errors; some successful responses preceded failures. Not proof that request shape never contributes, but no new client/schema failure is present in these terminal reasons."
+}
