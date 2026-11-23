@@ -1,0 +1,5 @@
+{
+  "number": 2,
+  "title": "increment() crashes with KeyError when the field does not exist yet",
+  "body": "I'm using `tinydb.operations.increment` for a page-view counter. The first\ntime a page is viewed the document has no `count` field yet, and instead of\njust starting the counter at 1, TinyDB blows up:\n\n```python\nfrom tinydb import TinyDB\nfrom tinydb.storages import MemoryStorage\nfrom tinydb.operations import increment\n\ndb = TinyDB(storage=MemoryStorage)\ndb.insert({'page': '/home'})\n\ndb.update(increment('count'), doc_ids=[1])\n# KeyError: 'count'\n```\n\nI would expect a counter on a missing field to simply start from 0, i.e.\nafter the call above the document should be `{'page': '/home', 'count': 1}`.\nSame goes for `add` and `subtract`: adding 5 to a missing field should give\n5, subtracting 3 should give -3. Right now I have to defensively insert\n`count: 0` everywhere, which defeats the point.\n\nTinyDB 4.9.0, Python 3.12."
+}
