@@ -40,6 +40,7 @@ class Usage:
         self.total_tokens = prior.get("total_tokens", 0)
         self.calls = prior.get("calls", 0)
         self.fallbacks = prior.get("fallbacks", 0)
+        self.models = prior.get("models", {})
 
     def record(self, metadata):
         self.prompt_tokens += metadata.get("promptTokenCount", 0)
@@ -54,6 +55,7 @@ class Usage:
             "total_tokens": self.total_tokens,
             "calls": self.calls,
             "fallbacks": self.fallbacks,
+            "models": self.models,
         }
 
 
@@ -181,6 +183,7 @@ def generate(model, system_prompt, contents, usage, temperature=0.2):
             try:
                 data = _post(active_model, payload, api_key)
                 usage.record(data.get("usageMetadata", {}))
+                usage.models[active_model] = usage.models.get(active_model, 0) + 1
                 if active_model != model:
                     usage.fallbacks += 1
                 candidates = data.get("candidates") or []

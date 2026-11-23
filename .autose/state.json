@@ -29,6 +29,10 @@
     {
       "event": "operational recovery: no reviewer verdict exists",
       "ts": "2026-11-23T13:32:17.314531+00:00"
+    },
+    {
+      "event": "operational recovery: no reviewer verdict exists",
+      "ts": "2026-11-23T14:15:59.700347+00:00"
     }
   ],
   "issue": 4,
