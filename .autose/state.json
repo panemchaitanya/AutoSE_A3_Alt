@@ -21,10 +21,14 @@
     {
       "event": "requirements -> passed",
       "ts": "2026-11-23T11:53:11.804476+00:00"
+    },
+    {
+      "event": "continue requested -> re-enter at design",
+      "ts": "2026-11-23T12:08:54.370962+00:00"
     }
   ],
   "issue": 1,
-  "review_rounds": 0,
+  "review_rounds": 1,
   "stages": {
     "design": {
       "status": "pending"
