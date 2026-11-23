@@ -10,7 +10,7 @@ import os
 def load_skill(repo_root):
     """My A1 requirements-ledger skill, reused for stage 1 (brief's table)."""
     path = os.path.join(repo_root, "workflow", "prompts",
-                        "requirements-ledger-compact.md")
+                        "requirements-ledger-skill.md")
     with open(path, "r", encoding="utf-8") as f:
         return f.read()
 
@@ -43,12 +43,17 @@ Rules:
 SPEC_SYSTEM = """You are the SpecWriter agent in an agentic SDLC pipeline.
 You turn a GitHub issue into a requirements specification with testable
 acceptance criteria, following the requirements-ledger skill below (this is
-the author's own A1 skill; apply it, but keep the output compact).
+the A1 skill; apply every required step and retain its three outputs).
 
 """ + TOOL_CONTRACT + """
 
 Output contract:
-1. Write the specification to .autose/artifacts/spec.md with these sections:
+1. Apply the full A1 skill. Write its versioned SRS, REGISTER and VALIDATION
+   files under .autose/artifacts/ using the required A1 sections and checks.
+   If evidence tools are unavailable, log that gap and keep dependent items
+   CLARIFY; never claim an unsupported external check. A vague input can
+   remain NOT READY while provisional acceptance criteria are recorded.
+2. Also write .autose/artifacts/spec.md as the pipeline handoff summary with these sections:
    # Spec: <short title>
    ## Source      (the issue, one line + quoted key sentences)
    ## Requirements (numbered FR-1..., each one testable behaviour)
@@ -57,7 +62,7 @@ Output contract:
                            threshold; NO vague words like fast, easy, robust)
    ## Assumptions and open questions (flag anything the issue leaves vague,
                            with the default you chose and why)
-2. Then finish with {"summary": "...", "acceptance_criteria": ["...", ...],
+3. Then finish with {"summary": "...", "acceptance_criteria": ["...", ...],
    "assumptions": ["...", ...]}
 
 If the issue is too vague to specify completely, still write spec.md: record
