@@ -65,6 +65,10 @@
     {
       "event": "testing -> passed",
       "ts": "2026-11-23T14:53:56.637324+00:00"
+    },
+    {
+      "event": "release -> passed",
+      "ts": "2026-11-23T14:54:27.196102+00:00"
     }
   ],
   "issue": 3,
@@ -81,7 +85,8 @@
       "summary": "Implemented the optional limit parameter in Table.search(cond, limit=None) supporting query cache slicing, ascending document ID order, and full backwards compatibility when limit=None or when limit exceeds the number of matching documents."
     },
     "release": {
-      "status": "pending"
+      "artifact": ".autose/artifacts/pr.md",
+      "status": "passed"
     },
     "requirements": {
       "artifact": ".autose/artifacts/spec.md",
