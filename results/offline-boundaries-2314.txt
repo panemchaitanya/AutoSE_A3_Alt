@@ -1,0 +1,24 @@
+test_explicit_check_status_required (test_a1_checks.A1Checks) ... ok
+test_missing_bundle_fails (test_a1_checks.A1Checks) ... ok
+test_presence_only_fails (test_a1_checks.A1Checks) ... ok
+test_action_specific_required_fields (test_contracts.Contracts) ... ok
+test_judge_schema_is_not_action_schema (test_contracts.Contracts) ... ok
+test_missing_write_content_cannot_truncate_existing_file (test_contracts.Contracts) ... [SpecWriter] step=0 action=write_file calls=0 tokens=0
+[SpecWriter] step=1 action=finish calls=0 tokens=0
+ok
+test_path_escape (test_contracts.Contracts) ... ok
+test_protected_direct_write (test_contracts.Contracts) ... ok
+test_old_pass_does_not_bypass_corrected_requirements (test_stage_boundaries.StageBoundaries) ... ok
+test_presence_failure_cannot_be_overruled_by_testability_judge (test_stage_boundaries.StageBoundaries) ... ok
+test_reviewer_cannot_read_assignment_readme_or_pipeline_artifacts (test_stage_boundaries.StageBoundaries) ... ok
+test_semantic_audit_veto_cannot_be_overruled (test_stage_boundaries.StageBoundaries) ... ok
+test_verified_marker_skips_without_model_call (test_stage_boundaries.StageBoundaries) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.010s
+
+OK
+[requirements] FAILED: agent error: provider unavailable
+[requirements] FAILED: checks failed after self-correction: missing versioned A1 SRS artifact; missing versioned A1 REGISTER artifact; missing versioned A1 VALIDATION artifact; VALIDATION lacks explicit PASS/FAIL/N/A result for C1; VALIDATION lacks explicit PASS/FAIL/N/A result for C2; VALIDATION lacks explicit PASS/FAIL/N/A result for C3; VALIDATION lacks explicit PASS/FAIL/N/A result for C4; VALIDATION lacks explicit PASS/FAIL/N/A result for K1; VALIDATION lacks explicit PASS/FAIL/N/A result for K2; VALIDATION lacks explicit PASS/FAIL/N/A result for K3; VALIDATION lacks explicit PASS/FAIL/N/A result for R-1; VALIDATION lacks explicit PASS/FAIL/N/A result for R-2; VALIDATION lacks explicit PASS/FAIL/N/A result for R-3; VALIDATION lacks explicit PASS/FAIL/N/A result for F1; VALIDATION lacks explicit PASS/FAIL/N/A result for F2; VALIDATION lacks explicit PASS/FAIL/N/A result for T1; VALIDATION lacks explicit PASS/FAIL/N/A result for T2; VALIDATION lacks explicit PASS/FAIL/N/A result for T3; VALIDATION lacks explicit PASS/FAIL/N/A result for T4; VALIDATION lacks explicit PASS/FAIL/N/A result for E1; VALIDATION lacks explicit PASS/FAIL/N/A result for E2; VALIDATION lacks explicit PASS/FAIL/N/A result for E3; VALIDATION lacks explicit PASS/FAIL/N/A result for E4; VALIDATION lacks explicit PASS/FAIL/N/A result for E5; VALIDATION lacks readiness verdict; A1 semantic validation: A1 structural checks failed
+[requirements] FAILED: checks failed after self-correction: A1 semantic validation: unsupported readiness
+[requirements] already passed with verified A1 bundle, skipping
