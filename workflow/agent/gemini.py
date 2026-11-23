@@ -139,6 +139,7 @@ def response_schema(system_prompt):
              "start_line":{"type":"INTEGER"},"end_line":{"type":"INTEGER"}},
             ("action","path")),
         action("write_file", {"path": string, "content": string}),
+        action("edit_file", {"path": string, "old_text": string, "new_text": string}),
         action("run_shell", {"command": string}),
         action("finish", {"result": result}),
     ]}

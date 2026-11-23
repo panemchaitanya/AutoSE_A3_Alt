@@ -69,6 +69,10 @@
     {
       "event": "implementation -> failed (agent error: step cap 40 reached)",
       "ts": "2026-11-23T15:44:35.702864+00:00"
+    },
+    {
+      "event": "operational recovery: no reviewer verdict exists",
+      "ts": "2026-11-23T16:00:54.461912+00:00"
     }
   ],
   "issue": 5,

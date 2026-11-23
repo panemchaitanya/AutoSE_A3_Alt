@@ -211,6 +211,14 @@ def stage_develop(repo_root, state, issue):
             task = ("Implement this design.\n\n"
                     f"--- design.md ---\n{design}\n\n"
                     f"--- acceptance criteria (from spec.md) ---\n{spec}\n")
+            prior_reason = state["stages"]["implementation"].get("reason")
+            if prior_reason:
+                task += "\nPREVIOUS IMPLEMENTATION FAILURE: " + prior_reason
+            task += ("\nYou must actually change source to implement the design. "
+                     "A status check is not completion. Do not finish with an "
+                     "empty files_changed list. Use a short Python editing command "
+                     "if writing an entire large source file would be wasteful. "
+                     "Preserve unrelated code and verify the resulting diff.")
             if feedback:
                 task += ("\n--- PREVIOUS ATTEMPT FAILED TESTING - fix it ---\n"
                          + feedback)
