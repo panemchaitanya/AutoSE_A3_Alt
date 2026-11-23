@@ -49,10 +49,14 @@
     {
       "event": "testing -> passed",
       "ts": "2026-11-23T12:49:26.787438+00:00"
+    },
+    {
+      "event": "continue requested -> re-enter at implementation",
+      "ts": "2026-11-23T12:51:37.702724+00:00"
     }
   ],
   "issue": 1,
-  "review_rounds": 1,
+  "review_rounds": 2,
   "stages": {
     "design": {
       "artifact": ".autose/artifacts/design.md",
@@ -60,7 +64,7 @@
       "summary": "Designed the change to support string document IDs in update() and remove() operations by normalizing requested doc_ids with document_id_class."
     },
     "implementation": {
-      "status": "passed",
+      "status": "pending",
       "summary": "Implemented support for string document IDs in Table.update() and Table.remove() by normalizing requested doc_ids through self.document_id_class."
     },
     "release": {
@@ -76,7 +80,7 @@
     },
     "testing": {
       "artifact": ".autose/artifacts/test_report.md",
-      "status": "passed"
+      "status": "pending"
     }
   },
   "usage": {
