@@ -1,0 +1,40 @@
+============================= test session starts ==============================
+platform linux -- Python 3.10.12, pytest-9.2.0, pluggy-1.7.0
+rootdir: /downloads/a3work/repo
+configfile: pytest.ini
+plugins: cov-7.1.0, platformdirs-4.12.4, anyio-4.16.0
+collected 254 items
+
+tests/test_middlewares.py .........                                      [  3%]
+tests/test_operations.py ..............                                  [  9%]
+tests/test_queries.py ..................................                 [ 22%]
+tests/test_storages.py ..............                                    [ 27%]
+tests/test_tables.py ...............................                     [ 40%]
+tests/test_tinydb.py ................................................... [ 60%]
+...............................................................          [ 85%]
+tests/test_utils.py ............                                         [ 89%]
+workflow/tests/test_a1_checks.py ...                                     [ 90%]
+workflow/tests/test_contracts.py .....                                   [ 92%]
+workflow/tests/test_conversation_recovery.py ....                        [ 94%]
+workflow/tests/test_review_feedback.py .......                           [ 97%]
+workflow/tests/test_reviewer_bootstrap.py ..                             [ 98%]
+workflow/tests/test_stage_boundaries.py .....                            [100%]
+
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.10.12-final-0 _______________
+
+Name                    Stmts   Miss Branch BrPart  Cover
+---------------------------------------------------------
+tinydb/__init__.py          5      0      0      0   100%
+tinydb/database.py         53      0     10      0   100%
+tinydb/middlewares.py      44      3     14      3    90%
+tinydb/mypy_plugin.py      26     26      2      0     0%
+tinydb/operations.py       26      0      0      0   100%
+tinydb/queries.py         130      2     30      4    96%
+tinydb/storages.py         57      0      8      0   100%
+tinydb/table.py           241      1    104      8    97%
+tinydb/utils.py            78      1     18      1    98%
+tinydb/version.py           1      0      0      0   100%
+---------------------------------------------------------
+TOTAL                     661     33    186     16    94%
+============================= 254 passed in 0.67s ==============================

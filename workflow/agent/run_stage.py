@@ -27,6 +27,7 @@ import config
 import controller
 import gemini
 import prompts
+import review_feedback
 
 
 def read_file(repo_root, rel):
@@ -182,6 +183,7 @@ def stage_design(repo_root, state, issue):
             "Explore the repo with list_files/read_file, then write "
             ".autose/artifacts/design.md and finish.")
 
+    task += review_feedback.task_feedback(repo_root)
     original_task = task
     for attempt in (1, 2):
         result, transcript, err = agent.run_agent(
@@ -235,6 +237,7 @@ def stage_develop(repo_root, state, issue):
             task = ("Implement this design.\n\n"
                     f"--- design.md ---\n{design}\n\n"
                     f"--- acceptance criteria (from spec.md) ---\n{spec}\n")
+            task += review_feedback.task_feedback(repo_root)
             prior_reason = state["stages"]["implementation"].get("reason")
             if prior_reason:
                 task += "\nPREVIOUS IMPLEMENTATION FAILURE: " + prior_reason

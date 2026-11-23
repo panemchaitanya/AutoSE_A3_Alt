@@ -14,6 +14,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import config
 import controller
+import review_feedback
 
 TRIGGER_LABEL = "autose"
 TRIGGER_COMMAND = "/autose"
@@ -125,6 +126,14 @@ def main():
                 controller.record(state, "operational recovery: no reviewer verdict exists")
                 state["review_rounds"] = 0
         else:
+            # Fetch the posted review before creating the continuation commit.
+            # A retry must repair actual findings, not silently repeat the old task.
+            feedback = review_feedback.collect_review_feedback(gh_api, repo, branch)
+            review_feedback.save_feedback(".", feedback)
+            # The isolated review job cannot push state. Retain its actual
+            # verdict here so an operational resume cannot reset review rounds.
+            state["stages"]["review"]["verdict"] = "request_changes"
+            controller.record(state, f"review feedback recovered from {feedback['review_url']}")
             state["review_rounds"] = state.get("review_rounds", 0) + 1
             controller.entry_stage_for_continue(state,
                 "approach" if entry == "design" else "code")
