@@ -1,0 +1,5 @@
+{
+  "number": 1,
+  "title": "update() and remove() silently do nothing when I pass the doc id as a string",
+  "body": "I spent an hour debugging this. `db.get(doc_id='1')` finds my document fine,\nbut when I pass the same id as a string to `update` or `remove`, nothing\nhappens. No error, no warning, the document is just unchanged.\n\n```python\nfrom tinydb import TinyDB\nfrom tinydb.storages import MemoryStorage\n\ndb = TinyDB(storage=MemoryStorage)\ndb.insert({'x': 1})\n\nprint(db.get(doc_id='1'))            # {'x': 1}  <- works\nprint(db.update({'x': 2}, doc_ids=['1']))  # []   <- silently did nothing!\nprint(db.all())                      # [{'x': 1}] <- unchanged\nprint(db.remove(doc_ids=['1']))      # []   <- same here\nprint(len(db))                       # 1\n```\n\nPassing the int `1` instead of `'1'` works. My ids come from a web form so\nthey are always strings, and I really do not want to crash on every bad\ninput either - but a silent no-op on a write is the worst of both worlds.\nPlease make these consistent with `get` (which accepts the string form).\n\nTinyDB 4.9.0, Python 3.12."
+}
