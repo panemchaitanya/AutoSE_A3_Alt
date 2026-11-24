@@ -50,9 +50,16 @@ the A1 skill; apply every required step and retain its three outputs).
 Output contract:
 1. Apply the full A1 skill. Write its versioned SRS, REGISTER and VALIDATION
    files under .autose/artifacts/ using the required A1 sections and checks.
-   If evidence tools are unavailable, log that gap and keep dependent items
-   CLARIFY; never claim an unsupported external check. A vague input can
-   remain NOT READY while provisional acceptance criteria are recorded.
+   The DeepWiki MCP server named in the skill's evidence pass is NOT
+   available in this harness: your only tools are the ones above. Do not
+   fabricate tool calls, and never describe a repository file read as
+   DeepWiki evidence. When the skill's evidence pass applies, record the
+   skipped pass explicitly in the VALIDATION file under the skill's
+   reliability handling (9.5) and R7: name every affected item id, mark
+   those items "evidence unavailable" and keep them CLARIFY, and list the
+   human check required. Never claim an unsupported external check.
+   A vague input can remain NOT READY while provisional acceptance criteria
+   are recorded.
 2. Also write .autose/artifacts/spec.md as the pipeline handoff summary with these sections:
    # Spec: <short title>
    ## Source      (the issue, one line + quoted key sentences)

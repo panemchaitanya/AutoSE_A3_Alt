@@ -225,6 +225,16 @@ def stage_requirements(repo_root, state, issue):
             "SpecWriter", config.MODEL_SPEC, system, task, repo_root, usage,
             stage=stage, on_progress=persist)
         persist()
+        # Every attempt's transcript is preserved under its own artifact
+        # name; later attempts never overwrite a prior attempt's record.
+        transcript_text = json.dumps(transcript, indent=2)[:200000]
+        transcript_id = _sha(transcript_text)[:16]
+        execution_id = os.environ.get("GITHUB_RUN_ID", "local")
+        execution_attempt = os.environ.get("GITHUB_RUN_ATTEMPT", "1")
+        write_artifact(repo_root,
+                       f"transcript_{stage}_attempt{attempt}_"
+                       f"{execution_id}_{execution_attempt}_{transcript_id}.json",
+                       transcript_text)
         if err:
             return fail(repo_root, state, stage,
                         f"agent error: {err}", transcript)
