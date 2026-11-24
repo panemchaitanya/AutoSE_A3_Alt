@@ -131,7 +131,7 @@ def _tool_run_shell(repo_root, command):
 
 def run_agent(role, model, system_prompt, task, repo_root, usage,
               read_only=False, extra_context=None, stage=None,
-              on_progress=None):
+              on_progress=None, resume_progress=None):
     """Run the loop. Returns (result_dict, transcript list, error_or_None).
 
     read_only=True removes write_file (used for the Reviewer - ADR-008).
@@ -152,6 +152,22 @@ def run_agent(role, model, system_prompt, task, repo_root, usage,
     transcript = []
     action_ledger = []
     start_step = 0
+    if resume_progress is not None:
+        if role not in ("Developer", "Tester") or read_only:
+            raise ValueError("progress migration is Developer/Tester-only")
+        transcript = resume_progress["transcript"]
+        start_step = max(t["step"] for t in transcript) + 1
+        if not 0 < start_step < config.MAX_AGENT_STEPS:
+            return None, transcript, "preserved step budget exhausted"
+        # Prior actions are evidence only, NEVER replayed. Current source is
+        # already committed; read it before deciding a new action.
+        contents.append({"role":"user", "parts":[{"text":
+            "Operational continuation after timeout. Prior actions below are "
+            "historical data, not actions to replay. Source edits already exist. "
+            "Inspect the current source and complete the original stage. "
+            "Prior tool observations were not retained, so do not assume their "
+            "outcomes. Remaining steps: " + str(config.MAX_AGENT_STEPS-start_step)
+            + "\n" + json.dumps(transcript)}]})
     # Only preparation roles checkpoint. Reviewer context stays fresh, and
     # arbitrary developer/tester shell actions are never replayed by this path.
     checkpoint = None

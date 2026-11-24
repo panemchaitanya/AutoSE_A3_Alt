@@ -35,6 +35,21 @@ class StageBoundaries(unittest.TestCase):
   with patch.object(run_stage.prompts,'load_skill',return_value='fixture'),patch.object(run_stage.agent,'run_agent',return_value=({},[],None)),patch.object(run_stage.a1_checks,'check_a1_bundle',return_value=(True,[],{'SRS':'fixture'})),patch.object(run_stage,'judge',side_effect=[(False,'unsupported readiness'),(True,'testable')]*2):
    ok=run_stage.stage_requirements(str(self.root),self.state,self.issue)
   self.assertFalse(ok);self.assertFalse(self.state.get('a1_bundle_verified',False))
+ def test_integrity_judge_gets_issue_and_definitions_and_correction_names_bundle(self):
+  (self.root/'.autose/artifacts/spec.md').write_text('# Spec\n## Acceptance criteria\n- Given input, when called, then returns1.\n')
+  tasks=[]; audits=[]
+  def model(*args,**kw):
+   tasks.append(args[3]);return {},[],None
+  def judge(root,usage,question,document,stage=None):
+   audits.append((question,document));return (False,'SRS FR-2 unsupported source') if len(audits)%2 else (True,'testable')
+  with patch.object(run_stage.prompts,'load_skill',return_value='DEFINITION FIXTURE'),patch.object(run_stage.agent,'run_agent',side_effect=model),patch.object(run_stage.a1_checks,'check_a1_bundle',return_value=(True,[],{'SRS':'fixture'})),patch.object(run_stage,'judge',side_effect=judge):
+   self.assertFalse(run_stage.stage_requirements(str(self.root),self.state,self.issue))
+  self.assertIn('DEFINITION FIXTURE',audits[0][1])
+  self.assertIn('offline fixture',audits[0][1])
+  self.assertIn('REGISTER and VALIDATION',tasks[1])
+  self.assertIn('actual failing',tasks[1])
+  checks=json.loads((self.root/'.autose/artifacts/requirements_checks_attempt1.json').read_text())
+  self.assertIn('SRS FR-2 unsupported source',checks['problems'][0])
  def test_reviewer_cannot_read_assignment_readme_or_pipeline_artifacts(self):
   (self.root/'README.md').write_text('pipeline reasoning')
   (self.root/'README.rst').write_text('upstream docs')
