@@ -166,13 +166,23 @@
     {
       "event": "requirements -> passed",
       "ts": "2026-11-24T10:53:22.878802+00:00"
+    },
+    {
+      "event": "design -> running",
+      "ts": "2026-11-24T10:53:31.955595+00:00"
+    },
+    {
+      "event": "design -> passed",
+      "ts": "2026-11-24T10:56:02.979798+00:00"
     }
   ],
   "issue": 1,
   "review_rounds": 0,
   "stages": {
     "design": {
-      "status": "pending"
+      "artifact": ".autose/artifacts/design.md",
+      "status": "passed",
+      "summary": "Designed the implementation plan for supporting string document IDs in TinyDB's update() and remove() methods, adhering to all architectural constraints."
     },
     "implementation": {
       "status": "pending"
@@ -194,14 +204,14 @@
     }
   },
   "usage": {
-    "calls": 63,
-    "completion_tokens": 14766,
+    "calls": 68,
+    "completion_tokens": 15223,
     "fallbacks": 22,
     "models": {
-      "gemini-3.5-flash": 2,
-      "gemini-3.5-flash-lite": 26
+      "gemini-3.5-flash": 3,
+      "gemini-3.5-flash-lite": 30
     },
-    "prompt_tokens": 514421,
-    "total_tokens": 529371
+    "prompt_tokens": 531968,
+    "total_tokens": 547753
   }
 }

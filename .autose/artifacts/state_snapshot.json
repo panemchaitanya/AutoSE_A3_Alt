@@ -1,4 +1,5 @@
 {
+  "a1_bundle_verified": true,
   "branch": "autose/issue-1",
   "fix_cycles": 0,
   "history": [
@@ -155,23 +156,33 @@
       "ts": "2026-11-24T09:30:49.272306+00:00"
     },
     {
-      "ts": "2026-11-24T09:30:56.853531+00:00",
-      "event": "A3-profile A1 validation required; downstream checkpoints invalidated"
+      "event": "A3-profile A1 validation required; downstream checkpoints invalidated",
+      "ts": "2026-11-24T09:30:56.853531+00:00"
     },
     {
-      "ts": "2026-11-24T09:30:56.853547+00:00",
-      "event": "requirements -> running"
+      "event": "requirements -> running",
+      "ts": "2026-11-24T09:30:56.853547+00:00"
     },
     {
-      "ts": "2026-11-24T10:53:22.878802+00:00",
-      "event": "requirements -> passed"
+      "event": "requirements -> passed",
+      "ts": "2026-11-24T10:53:22.878802+00:00"
+    },
+    {
+      "ts": "2026-11-24T10:53:31.955595+00:00",
+      "event": "design -> running"
+    },
+    {
+      "ts": "2026-11-24T10:56:02.979798+00:00",
+      "event": "design -> passed"
     }
   ],
   "issue": 1,
   "review_rounds": 0,
   "stages": {
     "design": {
-      "status": "pending"
+      "status": "passed",
+      "artifact": ".autose/artifacts/design.md",
+      "summary": "Designed the implementation plan for supporting string document IDs in TinyDB's update() and remove() methods, adhering to all architectural constraints."
     },
     "implementation": {
       "status": "pending"
@@ -193,15 +204,14 @@
     }
   },
   "usage": {
-    "prompt_tokens": 514421,
-    "completion_tokens": 14766,
-    "total_tokens": 529371,
-    "calls": 63,
+    "prompt_tokens": 531968,
+    "completion_tokens": 15223,
+    "total_tokens": 547753,
+    "calls": 68,
     "fallbacks": 22,
     "models": {
-      "gemini-3.5-flash-lite": 26,
-      "gemini-3.5-flash": 2
+      "gemini-3.5-flash": 3,
+      "gemini-3.5-flash-lite": 30
     }
-  },
-  "a1_bundle_verified": true
+  }
 }
