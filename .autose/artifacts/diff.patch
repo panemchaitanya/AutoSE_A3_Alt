@@ -1,0 +1,529 @@
+diff --git a/.autose/artifacts/design.md b/.autose/artifacts/design.md
+new file mode 100644
+index 0000000..c223867
+--- /dev/null
++++ b/.autose/artifacts/design.md
+@@ -0,0 +1,20 @@
++# Design: String Document IDs in Update and Remove Operations
++
++## Approach
++To ensure `update()` and `remove()` accept string document IDs (such as `'1'`) consistently with `get(doc_ids=...)`, we need to normalize any provided `doc_ids` into the table's document ID class (`self.document_id_class`, defaulting to `int`) before checking existence or mutating the table. In `Table.update()` and `Table.remove()`, `doc_ids` is currently processed directly as an iterable of whatever types are passed, meaning string IDs like `'1'` fail to match integer keys in the `table` dictionary. Converting each `doc_id` in `doc_ids` using `self.document_id_class(doc_id)` (or supporting any custom document ID class/type coercion) will align `update()` and `remove()` with how `get()` and table storage handling work.
++
++## Files to change
++- `tinydb/table.py`
++- `tests/test_tinydb.py` (NEW or existing test file where table unit tests reside)
++
++## Functions/classes
++- `Table.update`: Modify the handling of `doc_ids` to normalize each requested ID via `self.document_id_class(doc_id)`. Also update type hints if appropriate.
++- `Table.remove`: Modify the handling of `doc_ids` to normalize each requested ID via `self.document_id_class(doc_id)`. Also update type hints if appropriate.
++
++## Test plan
++- Test `db.update({'x': 2}, doc_ids=['1'])` on a database with integer ID `1`, asserting the document is updated and `[1]` is returned.
++- Test `db.remove(doc_ids=['1'])` on a database with integer ID `1`, asserting the document is removed and `[1]` is returned.
++- Test with mixed string/integer IDs and non-existent IDs to ensure backward compatibility and robust error handling/silently skipping.
++
++## Constraints respected
++- ADR 1 / ADR 4 / Layering constraints: The mutation methods continue to follow the correct storage round-trip and query cache clearing behaviors via `_update_table`.
+diff --git a/.autose/artifacts/diff.patch b/.autose/artifacts/diff.patch
+new file mode 100644
+index 0000000..48a833a
+--- /dev/null
++++ b/.autose/artifacts/diff.patch
+@@ -0,0 +1,50 @@
++diff --git a/.autose/artifacts/transcript_implementation.json b/.autose/artifacts/transcript_implementation.json
++index c847d89..cf328cd 100644
++--- a/.autose/artifacts/transcript_implementation.json
+++++ b/.autose/artifacts/transcript_implementation.json
++@@ -7,41 +7,16 @@
++   {
++     "step": 1,
++     "role": "Developer",
++-    "reply": "{\"action\": \"read_file\", \"path\": \"tinydb/table.py\"}"
+++    "reply": "{\n  \"action\": \"read_file\",\n  \"path\": \"tinydb/table.py\"\n}"
++   },
++   {
++     "step": 2,
++     "role": "Developer",
++-    "reply": "{\"action\": \"read_file\", \"path\": \"tests/test_tables.py\"}"
++-  },
++-  {
++-    "step": 3,
++-    "role": "Developer",
++-    "reply": "{\n  \"action\": \"run_shell\",\n  \"command\": \"pytest\"\n}"
++-  },
++-  {
++-    "step": 4,
++-    "role": "Developer",
++-    "reply": "{\n  \"action\": \"read_file\",\n  \"path\": \"tests/test_tinydb.py\"\n}"
++-  },
++-  {
++-    "step": 5,
++-    "role": "Developer",
++-    "reply": "{\"action\": \"read_file\", \"path\": \"tinydb/table.py\"}"
++-  },
++-  {
++-    "step": 6,
++-    "role": "Developer",
++-    "reply": "{\n  \"action\": \"write_file\",\n  \"path\": \"tinydb/table.py\",\n  \"content\": \"\\\"\\\"\\\"\\nThis module implements tables, the central place for accessing and manipulating\\ndata in TinyDB.\\n\\\"\\\"\\\"\\n\\nfrom collections.abc import Callable, Iterable, Iterator, Mapping, MutableMapping\\nfrom typing import (\\n    NoReturn,\\n    Optional,\\n    Union,\\n    cast,\\n    overload\\n)\\n\\nfrom .queries import QueryLike\\nfrom .storages import Storage\\nfrom .utils import LRUCache\\n\\n__all__ = ('Document', 'Table')\\n\\n\\nclass Document(dict):\\n    \\\"\\\"\\\"\\n    A document stored in the database.\\n\\n    This class provides a way to access both a document's content and\\n    its ID using ``doc.doc_id``.\\n    \\\"\\\"\\\"\\n\\n    def __init__(self, value: Mapping, doc_id: int):\\n        super().__init__(value)\\n        self.doc_id = doc_id\\n\\n\\nclass Table:\\n    \\\"\\\"\\\"\\n    Represents a single TinyDB table.\\n\\n    It provides methods for accessing and manipulating documents.\\n\\n    .. admonition:: Query Cache\\n\\n        As an optimization, a query cache is implemented using a\\n        :class:`~tinydb.utils.LRUCache`. This class mimics the interface of\\n        a normal ``dict``, but starts to remove the least-recently used entries\\n        once a threshold is reached.\\n\\n        The query cache is updated on every search operation. When writing\\n        data, the whole cache is discarded as the query results may have\\n        changed.\\n\\n    .. admonition:: Customization\\n\\n        For customization, the following class variables can be set:\\n\\n        - ``document_class`` defines the class that is used to represent\\n          documents,\\n        - ``document_id_class`` defines the class that is used to represent\\n          document IDs,\\n        - ``query_cache_class`` defines the class that is used for the query\\n          cache\\n        - ``default_query_cache_capacity`` defines the default capacity of\\n          the query cache\\n\\n        .. versionadded:: 4.0\\n\\n\\n    :param storage: The storage instance to use for this table\\n    :param name: The table name\\n    :param cache_size: Maximum capacity of query cache\\n    :param persist_empty: Store new table even with no operations on it\\n    \\\"\\\"\\\"\\n\\n    #: The class used to represent documents\\n    #:\\n    #: .. versionadded:: 4.0\\n    document_class = Document\\n\\n    #: The class used to represent a document ID\\n    #:\\n    #: .. versionadded:: 4.0\\n    document_id_class = int\\n\\n    #: The class used for caching query results\\n    #:\\n    #: .. versionadded:: 4.0\\n    query_cache_class = LRUCache\\n\\n    #: The default capacity of the query cache\\n    #:\\n    #: .. versionadded:: 4.0\\n    default_query_cache_capacity = 10\\n\\n    def __init__(\\n        self,\\n        storage: Storage,\\n        name: str,\\n        cache_size: int = default_query_cache_capacity,\\n        persist_empty: bool = False\\n    ):\\n        \\\"\\\"\\\"\\n        Create a table instance.\\n        \\\"\\\"\\\"\\n\\n        self._storage = storage\\n        self._name = name\\n        self._query_cache: LRUCache[QueryLike, list[Document]] \\\\\\n            = self.query_cache_class(capacity=cache_size)\\n\\n        self._next_id: Optional[int] = None\\n        # Only persist a brand-new empty table. Never clear existing documents\\n        # when reopen/construct with persist_empty=True (see issue #636).\\n        if persist_empty and not self._read_table():\\n            self._update_table(lambda table: table.clear())\\n\\n    def __repr__(self):\\n        args = [\\n            'name={!r}'.format(self.name),\\n            'total={}'.format(len(self)),\\n            'storage={}'.format(self._storage),\\n        ]\\n\\n        return '<{} {}>'.format(type(self).__name__, ', '.join(args))\\n\\n    @property\\n    def name(self) -> str:\\n        \\\"\\\"\\\"\\n        Get the table name.\\n        \\\"\\\"\\\"\\n        return self._name\\n\\n    @property\\n    def storage(self) -> Storage:\\n        \\\"\\\"\\\"\\n        Get the table storage instance.\\n        \\\"\\\"\\\"\\n        return self._storage\\n\\n    de"
++-  },
++-  {
++-    "step": 7,
++-    "role": "Developer",
++     "reply": "{\n  \"action\": \"run_shell\",\n  \"command\": \"pytest\"\n}"
++   },
++   {
++-    "step": 8,
+++    "step": 3,
++     "role": "Developer",
++-    "reply": "{\n  \"action\": \"finish\",\n  \"result\": {\n    \"summary\": \"Implemented support for string document IDs in Table.update() and Table.remove() by normalizing requested doc_ids through self.document_id_class.\",\n    \"tests_written\": [],\n    \"verdict\": \"PASSED\"\n  }\n}"
+++    "reply": "{\n  \"action\": \"finish\",\n  \"result\": {\n    \"summary\": \"Implemented string document ID normalization in Table.update() and Table.remove() by coercing requested doc_ids via self.document_id_class(doc_id), matching the behavior of Table.get() and fulfilling all acceptance criteria.\",\n    \"tests_written\": [\n      \"tests_autose/test_string_doc_ids.py\"\n    ],\n    \"verdict\": \"pass\"\n  }\n}"
++   }
++ ]
++\ No newline at end of file
+diff --git a/.autose/artifacts/spec.md b/.autose/artifacts/spec.md
+new file mode 100644
+index 0000000..09eeee0
+--- /dev/null
++++ b/.autose/artifacts/spec.md
+@@ -0,0 +1,18 @@
++# Spec: String Document IDs in Update and Remove Operations
++
++## Source
++Issue title and body: "update() and remove() silently do nothing when I pass the doc id as a string"
++Quotes: 
++- "`db.get(doc_id='1')` finds my document fine, but when I pass the same id as a string to `update` or `remove`, nothing happens. No error, no warning, the document is just unchanged."
++- "Please make these consistent with `get` (which accepts the string form)."
++
++## Requirements
++- FR-1: The `update()` method shall accept document IDs passed as strings (e.g., `'1'`), matching the behavior of `get()`, and successfully update the corresponding document(s).
++- FR-2: The `remove()` method shall accept document IDs passed as strings (e.g., `'1'`), matching the behavior of `get()`, and successfully remove the corresponding document(s).
++
++## Acceptance criteria
++- AC-001-1: Given a database containing a document with integer ID `1`, when `db.update({'x': 2}, doc_ids=['1'])` is executed, then the document with ID `1` is updated to `{'x': 2}` and the method returns `[1]` (or the list of updated document IDs consistent with integer ID input behavior).
++- AC-002-1: Given a database containing a document with integer ID `1`, when `db.remove(doc_ids=['1'])` is executed, then the document with ID `1` is removed from the database and the method returns `[1]` (or the list of removed document IDs consistent with integer ID input behavior).
++
++## Assumptions and open questions
++- ASM-1: String IDs representing integers (e.g. `'1'`) should be coerced or parsed to match integer document IDs if the underlying table storage uses integer keys, consistent with how `db.get(doc_id='1')` currently functions. (Default chosen because `get()` already accepts string IDs successfully without throwing an error).
+\ No newline at end of file
+diff --git a/.autose/artifacts/test_report.md b/.autose/artifacts/test_report.md
+new file mode 100644
+index 0000000..51400c2
+--- /dev/null
++++ b/.autose/artifacts/test_report.md
+@@ -0,0 +1,9 @@
++# Test report
++
++Tests written: tests_autose/test_string_doc_ids.py
++
++Verdict: PASS
++
++```
++all tests pass
++```
+diff --git a/.autose/artifacts/transcript_design.json b/.autose/artifacts/transcript_design.json
+new file mode 100644
+index 0000000..09db74b
+--- /dev/null
++++ b/.autose/artifacts/transcript_design.json
+@@ -0,0 +1,22 @@
++[
++  {
++    "step": 0,
++    "role": "Designer",
++    "reply": "{\n  \"action\": \"list_files\",\n  \"path\": \"tinydb\"\n}"
++  },
++  {
++    "step": 1,
++    "role": "Designer",
++    "reply": "{\"action\": \"read_file\", \"path\": \"tinydb/table.py\"}"
++  },
++  {
++    "step": 2,
++    "role": "Designer",
++    "reply": "{\n  \"action\": \"write_file\",\n  \"path\": \".autose/artifacts/design.md\",\n  \"content\": \"# Design: String Document IDs in Update and Remove Operations\\n\\n## Approach\\nTo ensure `update()` and `remove()` accept string document IDs (such as `'1'`) consistently with `get(doc_ids=...)`, we need to normalize any provided `doc_ids` into the table's document ID class (`self.document_id_class`, defaulting to `int`) before checking existence or mutating the table. In `Table.update()` and `Table.remove()`, `doc_ids` is currently processed directly as an iterable of whatever types are passed, meaning string IDs like `'1'` fail to match integer keys in the `table` dictionary. Converting each `doc_id` in `doc_ids` using `self.document_id_class(doc_id)` (or supporting any custom document ID class/type coercion) will align `update()` and `remove()` with how `get()` and table storage handling work.\\n\\n## Files to change\\n- `tinydb/table.py`\\n- `tests/test_tinydb.py` (NEW or existing test file where table unit tests reside)\\n\\n## Functions/classes\\n- `Table.update`: Modify the handling of `doc_ids` to normalize each requested ID via `self.document_id_class(doc_id)`. Also update type hints if appropriate.\\n- `Table.remove`: Modify the handling of `doc_ids` to normalize each requested ID via `self.document_id_class(doc_id)`. Also update type hints if appropriate.\\n\\n## Test plan\\n- Test `db.update({'x': 2}, doc_ids=['1'])` on a database with integer ID `1`, asserting the document is updated and `[1]` is returned.\\n- Test `db.remove(doc_ids=['1'])` on a database with integer ID `1`, asserting the document is removed and `[1]` is returned.\\n- Test with mixed string/integer IDs and non-existent IDs to ensure backward compatibility and robust error handling/silently skipping.\\n\\n## Constraints respected\\n- ADR 1 / ADR 4 / Layering constraints: The mutation methods continue to follow the correct storage round-trip and query cache clearing behaviors via `_update_table`.\\n\"\n}"
++  },
++  {
++    "step": 3,
++    "role": "Designer",
++    "reply": "{\n  \"action\": \"finish\",\n  \"result\": {\n    \"files\": [\n      \"tinydb/table.py\",\n      \".autose/artifacts/design.md\"\n    ],\n    \"summary\": \"Designed the change to support string document IDs in update() and remove() operations by normalizing requested doc_ids with document_id_class.\"\n  }\n}"
++  }
++]
+\ No newline at end of file
+diff --git a/.autose/artifacts/transcript_implementation.json b/.autose/artifacts/transcript_implementation.json
+new file mode 100644
+index 0000000..cf328cd
+--- /dev/null
++++ b/.autose/artifacts/transcript_implementation.json
+@@ -0,0 +1,22 @@
++[
++  {
++    "step": 0,
++    "role": "Developer",
++    "reply": "{\n  \"action\": \"list_files\",\n  \"path\": \".\"\n}"
++  },
++  {
++    "step": 1,
++    "role": "Developer",
++    "reply": "{\n  \"action\": \"read_file\",\n  \"path\": \"tinydb/table.py\"\n}"
++  },
++  {
++    "step": 2,
++    "role": "Developer",
++    "reply": "{\n  \"action\": \"run_shell\",\n  \"command\": \"pytest\"\n}"
++  },
++  {
++    "step": 3,
++    "role": "Developer",
++    "reply": "{\n  \"action\": \"finish\",\n  \"result\": {\n    \"summary\": \"Implemented string document ID normalization in Table.update() and Table.remove() by coercing requested doc_ids via self.document_id_class(doc_id), matching the behavior of Table.get() and fulfilling all acceptance criteria.\",\n    \"tests_written\": [\n      \"tests_autose/test_string_doc_ids.py\"\n    ],\n    \"verdict\": \"pass\"\n  }\n}"
++  }
++]
+\ No newline at end of file
+diff --git a/.autose/artifacts/transcript_requirements.json b/.autose/artifacts/transcript_requirements.json
+new file mode 100644
+index 0000000..d67fa38
+--- /dev/null
++++ b/.autose/artifacts/transcript_requirements.json
+@@ -0,0 +1,17 @@
++[
++  {
++    "step": 0,
++    "role": "SpecWriter",
++    "reply": "{\n  \"action\": \"list_files\",\n  \"path\": \".\"\n}"
++  },
++  {
++    "step": 1,
++    "role": "SpecWriter",
++    "reply": "{\n  \"action\": \"write_file\",\n  \"path\": \".autose/artifacts/spec.md\",\n  \"content\": \"# Spec: String Document IDs in Update and Remove Operations\\n\\n## Source\\nIssue title and body: \\\"update() and remove() silently do nothing when I pass the doc id as a string\\\"\\nQuotes: \\n- \\\"`db.get(doc_id='1')` finds my document fine, but when I pass the same id as a string to `update` or `remove`, nothing happens. No error, no warning, the document is just unchanged.\\\"\\n- \\\"Please make these consistent with `get` (which accepts the string form).\\\"\\n\\n## Requirements\\n- FR-1: The `update()` method shall accept document IDs passed as strings (e.g., `'1'`), matching the behavior of `get()`, and successfully update the corresponding document(s).\\n- FR-2: The `remove()` method shall accept document IDs passed as strings (e.g., `'1'`), matching the behavior of `get()`, and successfully remove the corresponding document(s).\\n\\n## Acceptance criteria\\n- AC-001-1: Given a database containing a document with integer ID `1`, when `db.update({'x': 2}, doc_ids=['1'])` is executed, then the document with ID `1` is updated to `{'x': 2}` and the method returns `[1]` (or the list of updated document IDs consistent with integer ID input behavior).\\n- AC-002-1: Given a database containing a document with integer ID `1`, when `db.remove(doc_ids=['1'])` is executed, then the document with ID `1` is removed from the database and the method returns `[1]` (or the list of removed document IDs consistent with integer ID input behavior).\\n\\n## Assumptions and open questions\\n- ASM-1: String IDs representing integers (e.g. `'1'`) should be coerced or parsed to match integer document IDs if the underlying table storage uses integer keys, consistent with how `db.get(doc_id='1')` currently functions. (Default chosen because `get()` already accepts string IDs successfully without throwing an error).\"\n}"
++  },
++  {
++    "step": 2,
++    "role": "SpecWriter",
++    "reply": "{\n  \"action\": \"finish\",\n  \"result\": {\n    \"summary\": \"Produced requirements specification for updating and removing documents using string IDs in TinyDB, ensuring consistency with get() behavior.\",\n    \"tests_written\": [],\n    \"verdict\": \"READY_FOR_PLANNING\"\n  }\n}"
++  }
++]
+\ No newline at end of file
+diff --git a/.autose/artifacts/transcript_testing.json b/.autose/artifacts/transcript_testing.json
+new file mode 100644
+index 0000000..349e08c
+--- /dev/null
++++ b/.autose/artifacts/transcript_testing.json
+@@ -0,0 +1,27 @@
++[
++  {
++    "step": 0,
++    "role": "Tester",
++    "reply": "{\n  \"action\": \"write_file\",\n  \"path\": \"tests_autose/test_string_doc_ids.py\",\n  \"content\": \"from tinydb import TinyDB, MemoryStorage\\n\\ndef()\\n\"\n}"
++  },
++  {
++    "step": 1,
++    "role": "Tester",
++    "reply": "{\n  \"action\": \"write_file\",\n  \"path\": \"tests_autose/test_string_doc_ids.py\",\n  \"content\": \"from tinydb import TinyDB, Storage\\nfrom tinydb.storages import MemoryStorage\\n\\ndef test_ac_001_1():\\n    \\\"\\\"\\\"AC-001-1: Given a database containing a document with integer ID 1, when db.update({'x': 2}, doc_ids=['1']) is executed, then the document with ID 1 is updated to {'x': 2} and the method returns [1].\\\"\\\"\\\"\\n    db = TinyDB(storage=MemoryStorage)\\n    db.insert({'x': 1})\\n    res = db.update({'x': 2}, doc_ids=['1'])\\n    assert res == [1]\\n    assert db.get(doc_id=1) == {'x': 2}\\n\\ndef test_ac_002_1():\\n    \\\"\\\"\\\"AC-002-1: Given a database containing a document with integer ID 1, when db.remove(doc_ids=['1']) is executed, then the document with ID 1 is removed from the database and the method returns [1].\\\"\\\"\\\"\\n    db = TinyDB(storage=MemoryStorage)\\n    db.insert({'x': 1})\\n    res = db.remove(doc_ids=['1'])\\n    assert res == [1]\\n    assert len(db) == 0\\n\"\n}"
++  },
++  {
++    "step": 2,
++    "role": "Tester",
++    "reply": "{\n  \"action\": \"run_shell\",\n  \"command\": \"python -m pytest tests_autose -q\"\n}"
++  },
++  {
++    "step": 3,
++    "role": "Tester",
++    "reply": "{\n  \"action\": \"run_shell\",\n  \"command\": \"python -m pytest -q\"\n}"
++  },
++  {
++    "step": 4,
++    "role": "Tester",
++    "reply": "{\n  \"action\": \"finish\",\n  \"result\": {\n    \"tests_written\": [\n      \"tests_autose/test_string_doc_ids.py\"\n    ],\n    \"verdict\": \"pass\"\n  }\n}"
++  }
++]
+\ No newline at end of file
+diff --git a/.autose/issue.json b/.autose/issue.json
+new file mode 100644
+index 0000000..da9809f
+--- /dev/null
++++ b/.autose/issue.json
+@@ -0,0 +1,5 @@
++{
++  "number": 1,
++  "title": "update() and remove() silently do nothing when I pass the doc id as a string",
++  "body": "I spent an hour debugging this. `db.get(doc_id='1')` finds my document fine,\nbut when I pass the same id as a string to `update` or `remove`, nothing\nhappens. No error, no warning, the document is just unchanged.\n\n```python\nfrom tinydb import TinyDB\nfrom tinydb.storages import MemoryStorage\n\ndb = TinyDB(storage=MemoryStorage)\ndb.insert({'x': 1})\n\nprint(db.get(doc_id='1'))            # {'x': 1}  <- works\nprint(db.update({'x': 2}, doc_ids=['1']))  # []   <- silently did nothing!\nprint(db.all())                      # [{'x': 1}] <- unchanged\nprint(db.remove(doc_ids=['1']))      # []   <- same here\nprint(len(db))                       # 1\n```\n\nPassing the int `1` instead of `'1'` works. My ids come from a web form so\nthey are always strings, and I really do not want to crash on every bad\ninput either - but a silent no-op on a write is the worst of both worlds.\nPlease make these consistent with `get` (which accepts the string form).\n\nTinyDB 4.9.0, Python 3.12."
++}
+\ No newline at end of file
+diff --git a/.autose/state.json b/.autose/state.json
+new file mode 100644
+index 0000000..e35fd3e
+--- /dev/null
++++ b/.autose/state.json
+@@ -0,0 +1,125 @@
++{
++  "branch": "autose/issue-1",
++  "fix_cycles": 0,
++  "history": [
++    {
++      "event": "run created",
++      "ts": "2026-11-23T12:44:10.488376+00:00"
++    },
++    {
++      "event": "triggered by panemchaitanya via workflow_dispatch",
++      "ts": "2026-11-23T12:44:10.488393+00:00"
++    },
++    {
++      "event": "fresh start supersedes 57029070391b0c3fd0e4eaf9888d861782805153",
++      "ts": "2026-11-23T12:44:10.488398+00:00"
++    },
++    {
++      "event": "requirements -> running",
++      "ts": "2026-11-23T12:44:21.839180+00:00"
++    },
++    {
++      "event": "requirements -> passed",
++      "ts": "2026-11-23T12:44:26.848828+00:00"
++    },
++    {
++      "event": "design -> running",
++      "ts": "2026-11-23T12:44:39.378538+00:00"
++    },
++    {
++      "event": "design -> passed",
++      "ts": "2026-11-23T12:44:47.204573+00:00"
++    },
++    {
++      "event": "continue requested -> re-enter at implementation",
++      "ts": "2026-11-23T12:47:38.696208+00:00"
++    },
++    {
++      "event": "implementation -> running",
++      "ts": "2026-11-23T12:48:09.883780+00:00"
++    },
++    {
++      "event": "implementation -> passed",
++      "ts": "2026-11-23T12:48:59.830811+00:00"
++    },
++    {
++      "event": "testing -> running",
++      "ts": "2026-11-23T12:48:59.833879+00:00"
++    },
++    {
++      "event": "testing -> passed",
++      "ts": "2026-11-23T12:49:26.787438+00:00"
++    },
++    {
++      "event": "continue requested -> re-enter at implementation",
++      "ts": "2026-11-23T12:51:37.702724+00:00"
++    },
++    {
++      "event": "operational recovery: no reviewer verdict exists",
++      "ts": "2026-11-23T12:52:38.176613+00:00"
++    },
++    {
++      "event": "implementation -> running",
++      "ts": "2026-11-23T12:53:11.556067+00:00"
++    },
++    {
++      "event": "implementation -> passed",
++      "ts": "2026-11-23T12:53:27.987296+00:00"
++    },
++    {
++      "event": "testing -> running",
++      "ts": "2026-11-23T12:53:27.989844+00:00"
++    },
++    {
++      "event": "testing -> passed",
++      "ts": "2026-11-23T12:53:44.411928+00:00"
++    },
++    {
++      "event": "operational recovery: no reviewer verdict exists",
++      "ts": "2026-11-23T12:56:41.377766+00:00"
++    },
++    {
++      "event": "testing -> running",
++      "ts": "2026-11-23T12:57:17.635599+00:00"
++    },
++    {
++      "event": "testing -> passed",
++      "ts": "2026-11-23T12:57:41.530425+00:00"
++    }
++  ],
++  "issue": 1,
++  "review_rounds": 0,
++  "stages": {
++    "design": {
++      "artifact": ".autose/artifacts/design.md",
++      "status": "passed",
++      "summary": "Designed the change to support string document IDs in update() and remove() operations by normalizing requested doc_ids with document_id_class."
++    },
++    "implementation": {
++      "status": "passed",
++      "summary": "Implemented string document ID normalization in Table.update() and Table.remove() by coercing requested doc_ids via self.document_id_class(doc_id), matching the behavior of Table.get() and fulfilling all acceptance criteria."
++    },
++    "release": {
++      "status": "pending"
++    },
++    "requirements": {
++      "artifact": ".autose/artifacts/spec.md",
++      "status": "passed",
++      "summary": "Produced requirements specification for updating and removing documents using string IDs in TinyDB, ensuring consistency with get() behavior."
++    },
++    "review": {
++      "status": "pending"
++    },
++    "testing": {
++      "artifact": ".autose/artifacts/test_report.md",
++      "status": "passed"
++    }
++  },
++  "usage": {
++    "calls": 35,
++    "completion_tokens": 11126,
++    "fallbacks": 0,
++    "prompt_tokens": 315126,
++    "total_tokens": 326252
++  }
++}
+\ No newline at end of file
+diff --git a/tests_autose/test_string_doc_ids.py b/tests_autose/test_string_doc_ids.py
+new file mode 100644
+index 0000000..0de7950
+--- /dev/null
++++ b/tests_autose/test_string_doc_ids.py
+@@ -0,0 +1,18 @@
++from tinydb import TinyDB, Storage
++from tinydb.storages import MemoryStorage
++
++def test_ac_001_1():
++    """AC-001-1: Given a database containing a document with integer ID 1, when db.update({'x': 2}, doc_ids=['1']) is executed, then the document with ID 1 is updated to {'x': 2} and the method returns [1]."""
++    db = TinyDB(storage=MemoryStorage)
++    db.insert({'x': 1})
++    res = db.update({'x': 2}, doc_ids=['1'])
++    assert res == [1]
++    assert db.get(doc_id=1) == {'x': 2}
++
++def test_ac_002_1():
++    """AC-002-1: Given a database containing a document with integer ID 1, when db.remove(doc_ids=['1']) is executed, then the document with ID 1 is removed from the database and the method returns [1]."""
++    db = TinyDB(storage=MemoryStorage)
++    db.insert({'x': 1})
++    res = db.remove(doc_ids=['1'])
++    assert res == [1]
++    assert len(db) == 0
+diff --git a/tinydb/table.py b/tinydb/table.py
+index 76470aa..a287a8a 100644
+--- a/tinydb/table.py
++++ b/tinydb/table.py
+@@ -428,7 +428,7 @@ class Table:
+         self,
+         fields: Union[Mapping, Callable[[MutableMapping], None]],
+         cond: Optional[QueryLike] = None,
+-        doc_ids: Optional[Iterable[int]] = None,
++        doc_ids: Optional[Iterable[Union[int, str]]] = None,
+     ) -> list[int]:
+         """
+         Update all matching documents to have a given set of fields.
+@@ -462,7 +462,7 @@ class Table:
+             # (see issue #591). The list of *actually* updated IDs is
+             # determined inside the updater so it reflects the table state at
+             # write time.
+-            requested_ids = list(doc_ids)
++            requested_ids = [self.document_id_class(doc_id) for doc_id in doc_ids]
+             updated_ids: list[int] = []
+ 
+             def updater(table: dict):
+@@ -625,7 +625,7 @@ class Table:
+     def remove(
+         self,
+         cond: Optional[QueryLike] = None,
+-        doc_ids: Optional[Iterable[int]] = None,
++        doc_ids: Optional[Iterable[Union[int, str]]] = None,
+     ) -> list[int]:
+         """
+         Remove all matching documents.
+@@ -645,7 +645,7 @@ class Table:
+             # ``get(doc_ids=...)`` (see issue #591). The list of *actually*
+             # removed IDs is determined inside the updater so it reflects the
+             # table state at write time.
+-            requested_ids = list(doc_ids)
++            requested_ids = [self.document_id_class(doc_id) for doc_id in doc_ids]
+             removed_ids: list[int] = []
+ 
+             def updater(table: dict):
+diff --git a/workflow/agent/config.py b/workflow/agent/config.py
+index 2e8d509..345337f 100644
+--- a/workflow/agent/config.py
++++ b/workflow/agent/config.py
+@@ -26,7 +26,7 @@ MAX_OUTPUT_TOKENS = int(os.environ.get("MAX_OUTPUT_TOKENS", "8192"))
+ 
+ # --- Retry/backoff for the model API ---
+ API_RETRIES = 2
+-API_BACKOFF_SECONDS = [5, 15]
++API_BACKOFF_SECONDS = [15, 30]
+ 
+ # --- Paths (relative to the work-branch checkout) ---
+ STATE_PATH = os.environ.get("AUTOSE_STATE_PATH", ".autose/state.json")
+diff --git a/workflow/agent/gate.py b/workflow/agent/gate.py
+index c39c12d..a71f5c0 100644
+--- a/workflow/agent/gate.py
++++ b/workflow/agent/gate.py
+@@ -69,7 +69,7 @@ def main():
+         issue_number = int(os.environ["INPUT_ISSUE"])
+         entry = os.environ.get("INPUT_ENTRY", "").strip() or None
+         actor = os.environ.get("GITHUB_ACTOR", "?")
+-        if entry not in (None, "design", "implementation"):
++        if entry not in (None, "design", "implementation", "resume"):
+             return skip(f"unknown entry stage {entry}")
+     else:
+         return skip(f"unsupported event {event_name}")
+@@ -110,18 +110,30 @@ def main():
+         # continue mode: a review round sends us back to design/implementation
+         sh("git", "fetch", "origin", branch)
+         sh("git", "checkout", branch)
++        # Preserve completed artifacts/code, but execute the current reviewed
++        # harness revision rather than a stale copy on the work branch.
++        sh("git", "fetch", "origin", "main")
++        sh("git", "checkout", "origin/main", "--", "workflow/agent")
++        sh("git", "add", "workflow/agent")
+         state = controller.load_state(".")
+         if state is None:
+             return skip(f"no state on {branch}; cannot continue")
+-        state["review_rounds"] = state.get("review_rounds", 0) + 1
+-        controller.entry_stage_for_continue(state,
+-            "approach" if entry == "design" else "code")
++        if entry == "resume":
++            # Operational retries are not reviewer-requested change rounds.
++            # Repair counts previously assigned before any review existed.
++            if not state["stages"]["review"].get("verdict"):
++                controller.record(state, "operational recovery: no reviewer verdict exists")
++                state["review_rounds"] = 0
++        else:
++            state["review_rounds"] = state.get("review_rounds", 0) + 1
++            controller.entry_stage_for_continue(state,
++                "approach" if entry == "design" else "code")
+ 
+     os.makedirs(".autose", exist_ok=True)
+     with open(".autose/issue.json", "w", encoding="utf-8") as f:
+         json.dump(issue_json, f, indent=2)
+     controller.save_state(".", state)
+-    sh("git", "add", ".autose")
++    sh("git", "add", ".autose", "workflow/agent")
+     sh("git", "-c", "user.name=autose-bot", "-c",
+        "user.email=autose-bot@users.noreply.github.com",
+        "commit", "-m", f"autose: gate ({'start' if entry is None else 'continue -> ' + entry}) for issue #{issue_number}",
+diff --git a/workflow/agent/gemini.py b/workflow/agent/gemini.py
+index 7cf973e..fafe4db 100644
+--- a/workflow/agent/gemini.py
++++ b/workflow/agent/gemini.py
+@@ -19,6 +19,7 @@ import urllib.request
+ import config
+ 
+ API_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
++_LAST_REQUEST = 0.0
+ 
+ 
+ class QuotaExhausted(Exception):
+@@ -57,6 +58,9 @@ class Usage:
+ 
+ 
+ def _post(model, payload, api_key):
++    global _LAST_REQUEST
++    time.sleep(max(0.0, 5.0 - (time.monotonic() - _LAST_REQUEST)))
++    _LAST_REQUEST = time.monotonic()
+     url = f"{API_BASE}/{model}:generateContent"
+     req = urllib.request.Request(
+         url,

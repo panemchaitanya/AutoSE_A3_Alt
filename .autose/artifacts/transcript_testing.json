@@ -1,0 +1,27 @@
+[
+  {
+    "step": 0,
+    "role": "Tester",
+    "reply": "{\n  \"action\": \"write_file\",\n  \"path\": \"tests_autose/test_string_doc_ids.py\",\n  \"content\": \"from tinydb import TinyDB, MemoryStorage\\n\\ndef()\\n\"\n}"
+  },
+  {
+    "step": 1,
+    "role": "Tester",
+    "reply": "{\n  \"action\": \"write_file\",\n  \"path\": \"tests_autose/test_string_doc_ids.py\",\n  \"content\": \"from tinydb import TinyDB, Storage\\nfrom tinydb.storages import MemoryStorage\\n\\ndef test_ac_001_1():\\n    \\\"\\\"\\\"AC-001-1: Given a database containing a document with integer ID 1, when db.update({'x': 2}, doc_ids=['1']) is executed, then the document with ID 1 is updated to {'x': 2} and the method returns [1].\\\"\\\"\\\"\\n    db = TinyDB(storage=MemoryStorage)\\n    db.insert({'x': 1})\\n    res = db.update({'x': 2}, doc_ids=['1'])\\n    assert res == [1]\\n    assert db.get(doc_id=1) == {'x': 2}\\n\\ndef test_ac_002_1():\\n    \\\"\\\"\\\"AC-002-1: Given a database containing a document with integer ID 1, when db.remove(doc_ids=['1']) is executed, then the document with ID 1 is removed from the database and the method returns [1].\\\"\\\"\\\"\\n    db = TinyDB(storage=MemoryStorage)\\n    db.insert({'x': 1})\\n    res = db.remove(doc_ids=['1'])\\n    assert res == [1]\\n    assert len(db) == 0\\n\"\n}"
+  },
+  {
+    "step": 2,
+    "role": "Tester",
+    "reply": "{\n  \"action\": \"run_shell\",\n  \"command\": \"python -m pytest tests_autose -q\"\n}"
+  },
+  {
+    "step": 3,
+    "role": "Tester",
+    "reply": "{\n  \"action\": \"run_shell\",\n  \"command\": \"python -m pytest -q\"\n}"
+  },
+  {
+    "step": 4,
+    "role": "Tester",
+    "reply": "{\n  \"action\": \"finish\",\n  \"result\": {\n    \"tests_written\": [\n      \"tests_autose/test_string_doc_ids.py\"\n    ],\n    \"verdict\": \"pass\"\n  }\n}"
+  }
+]
