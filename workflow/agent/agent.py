@@ -130,11 +130,15 @@ def _tool_run_shell(repo_root, command):
 
 
 def run_agent(role, model, system_prompt, task, repo_root, usage,
-              read_only=False, extra_context=None, stage=None):
+              read_only=False, extra_context=None, stage=None,
+              on_progress=None):
     """Run the loop. Returns (result_dict, transcript list, error_or_None).
 
     read_only=True removes write_file (used for the Reviewer - ADR-008).
     stage names the pipeline stage for per-call provenance logging.
+    on_progress, when given, is called after every successful model
+    response and every completed tool action so callers can persist
+    usage/state; a SIGTERM then retains known counters.
     """
     call_context = {"role": role, "stage": stage, "repo_root": repo_root,
                     "task_sha256": hashlib.sha256(task.encode()).hexdigest()}
@@ -176,6 +180,8 @@ def run_agent(role, model, system_prompt, task, repo_root, usage,
                 with open(checkpoint, encoding="utf-8") as saved:
                     prior = json.load(saved)
                 if prior.get("fingerprint") == fingerprint:
+                    if isinstance(prior.get("finished_result"), dict):
+                        return prior["finished_result"], prior["transcript"], None
                     contents = prior["contents"]
                     transcript = prior["transcript"]
                     action_ledger = prior["action_ledger"]
@@ -210,6 +216,8 @@ def run_agent(role, model, system_prompt, task, repo_root, usage,
             return None, transcript, str(e)
         contents.append({"role": "model", "parts": [{"text": reply}]})
         transcript.append({"step": step, "role": role, "reply": reply[:4000]})
+        if on_progress:
+            on_progress()
 
         action = _extract_action(reply)
         if action is None:
@@ -245,8 +253,15 @@ def run_agent(role, model, system_prompt, task, repo_root, usage,
                 contents.append({"role": "user", "parts": [{"text":
                     "OBSERVATION: finish requires \"result\" as a JSON object."}]})
                 continue
-            if checkpoint and os.path.exists(checkpoint):
-                os.remove(checkpoint)
+            if checkpoint:
+                # A completed response is durable before stage checks begin.
+                # Matching task/harness can recheck it without another API call.
+                temp_checkpoint = checkpoint + ".tmp"
+                with open(temp_checkpoint, "w", encoding="utf-8") as saved:
+                    json.dump({"fingerprint": fingerprint,
+                               "finished_result": result,
+                               "transcript": transcript}, saved)
+                os.replace(temp_checkpoint, checkpoint)
             return result, transcript, None
         if kind == "read_file":
             obs = _tool_read_file(repo_root, action.get("path", ""),
@@ -289,6 +304,8 @@ def run_agent(role, model, system_prompt, task, repo_root, usage,
             obs = obs[:12000] + "\n[bounded observation; use narrower file ranges or commands]"
         contents.append({"role": "user",
                          "parts": [{"text": f"OBSERVATION:\n{obs}"}]})
+        if on_progress:
+            on_progress()
 
     if checkpoint:
         with open(checkpoint, "w", encoding="utf-8") as saved:

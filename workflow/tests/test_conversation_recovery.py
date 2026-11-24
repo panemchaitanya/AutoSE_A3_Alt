@@ -23,7 +23,7 @@ class ConversationRecovery(unittest.TestCase):
    return json.dumps({'action':'finish','result':{'summary':'resumed'}})
   with patch.object(agent.gemini,'generate',side_effect=recovered),patch.object(agent,'_tool_read_file',side_effect=AssertionError('must not repeat')):
    result,transcript,error=self.run_role()
-  self.assertIsNone(error);self.assertEqual(result['summary'],'resumed');self.assertEqual(len(transcript),2);self.assertFalse(saved.exists())
+  self.assertIsNone(error);self.assertEqual(result['summary'],'resumed');self.assertEqual(len(transcript),2);self.assertEqual(json.loads(saved.read_text())["finished_result"]["summary"],"resumed")
  def test_changed_task_invalidates_saved_conversation(self):
   with patch.object(agent.gemini,'generate',side_effect=[json.dumps({'action':'read_file','path':'tinydb/a.py'}),gemini.QuotaExhausted('503')]):self.run_role()
   def changed(model,system,contents,usage,**_kw):

@@ -96,6 +96,83 @@ def store_usage(state, usage):
     state["usage"] = usage.as_dict()
 
 
+# ---------------------------------------------------- correction recovery
+# A stage's self-correction runs the agent with a NEW task (original task
+# plus the failed checks), so the agent-level checkpoint fingerprint
+# legitimately changes. Without a durable stage-level record, a SIGTERM /
+# job timeout during correction loses the attempt index and the exact
+# correction task, and a rerun restarts the correction from step 0 until
+# the job times out again. The record below makes the pending correction
+# durable in .autose/artifacts/ (committed / uploaded with the stage's
+# other artifacts). Resume restores it ONLY when every binding matches;
+# anything unknown discards the record and starts at attempt 1. A resume
+# never skips checks and never invents a pass.
+CORRECTION_SCHEMA = "autose-correction/1"
+CORRECTION_MAX_ATTEMPTS = 2
+
+
+def _sha(text):
+    return hashlib.sha256((text or "").encode()).hexdigest()
+
+
+def _correction_path(repo_root, stage):
+    return os.path.join(repo_root, config.ARTIFACTS_DIR,
+                        f"correction_{stage}.json")
+
+
+def save_correction(repo_root, record):
+    path = _correction_path(repo_root, record["stage"])
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    tmp = path + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as fh:
+        json.dump(record, fh, indent=2, sort_keys=True)
+    os.replace(tmp, path)
+
+
+def load_correction(repo_root, stage):
+    path = _correction_path(repo_root, stage)
+    if not os.path.isfile(path):
+        return None
+    try:
+        with open(path, encoding="utf-8") as fh:
+            return json.load(fh)
+    except (OSError, json.JSONDecodeError):
+        return {"schema": "invalid"}
+
+
+def clear_correction(repo_root, stage):
+    path = _correction_path(repo_root, stage)
+    if os.path.isfile(path):
+        os.remove(path)
+
+
+def correction_binds(record, stage, issue_number, system, original_task):
+    """(True, "") only when the record proves it belongs to THIS stage,
+    issue, system prompt, input task and executing harness. Unknown or
+    missing fields fail closed with a reason."""
+    if not isinstance(record, dict):
+        return False, "correction record is not an object"
+    if record.get("schema") != CORRECTION_SCHEMA:
+        return False, f"unknown correction schema {record.get('schema')!r}"
+    if record.get("stage") != stage:
+        return False, "record is for a different stage"
+    if record.get("issue") != issue_number:
+        return False, "record is for a different issue"
+    if record.get("system_sha256") != _sha(system):
+        return False, "system prompt changed since the correction ran"
+    if record.get("original_task_sha256") != _sha(original_task):
+        return False, "stage input changed since the correction ran"
+    if record.get("harness_sha256") != call_log.harness_digest():
+        return False, "harness code changed since the correction ran"
+    attempt = record.get("attempt")
+    if not isinstance(attempt, int) or not 2 <= attempt <= \
+            CORRECTION_MAX_ATTEMPTS:
+        return False, f"attempt {attempt!r} is outside the resumable bound"
+    if not isinstance(record.get("task"), str) or not record["task"]:
+        return False, "record carries no correction task"
+    return True, ""
+
+
 # ---------------------------------------------------------------- stage 1
 def stage_requirements(repo_root, state, issue):
     stage = "requirements"
@@ -117,25 +194,60 @@ def stage_requirements(repo_root, state, issue):
             + prompts.untrusted("ISSUE BODY", issue.get("body", "")))
 
     original_task = task
-    for attempt in (1, 2):
+    # Durable correction recovery: a prior run killed during
+    # self-correction left a bound record; resume its exact task and
+    # attempt index. Anything unknown discards the record (fail closed).
+    start_attempt = 1
+    pending = load_correction(repo_root, stage)
+    if pending is not None:
+        binds, why = correction_binds(pending, stage, issue["number"],
+                                      system, original_task)
+        if binds:
+            start_attempt = pending["attempt"]
+            task = pending["task"]
+            controller.record(
+                state, f"{stage}: resuming persisted correction "
+                       f"attempt {start_attempt}")
+        else:
+            # An unknown record does not grant another pair of attempts.
+            return fail(repo_root, state, stage,
+                        "correction recovery refused: " + why)
+        controller.save_state(repo_root, state)
+
+    def persist():
+        # After every successful response/tool action and before every
+        # judge call, counters hit disk: a SIGTERM retains known usage.
+        store_usage(state, usage)
+        controller.save_state(repo_root, state)
+
+    for attempt in range(start_attempt, CORRECTION_MAX_ATTEMPTS + 1):
         result, transcript, err = agent.run_agent(
             "SpecWriter", config.MODEL_SPEC, system, task, repo_root, usage,
-            stage=stage)
-        store_usage(state, usage)
+            stage=stage, on_progress=persist)
+        persist()
         if err:
             return fail(repo_root, state, stage,
                         f"agent error: {err}", transcript)
         spec_path = os.path.join(config.ARTIFACTS_DIR, "spec.md")
         if not os.path.isfile(os.path.join(repo_root, spec_path)):
+            problems = ["agent finished without writing spec.md"]
             task = ("You finished without writing .autose/artifacts/spec.md. "
                     "Write it now, then finish.")
-            problems = ["agent finished without writing spec.md"]
+            if attempt < CORRECTION_MAX_ATTEMPTS:
+                save_correction(repo_root, {
+                    "schema": CORRECTION_SCHEMA, "stage": stage,
+                    "issue": issue["number"], "attempt": attempt + 1,
+                    "task": task,
+                    "original_task_sha256": _sha(original_task),
+                    "system_sha256": _sha(system),
+                    "harness_sha256": call_log.harness_digest()})
             continue
         spec = read_file(repo_root, spec_path)
         ok, problems = checks.lint_spec(spec)
         aok, aproblems, adocs = a1_checks.check_a1_bundle(repo_root)
         problems += aproblems
         ok = ok and aok
+        persist()
         ajok, ajreason = judge(repo_root, usage,
             "Audit full A1 compliance, not just file presence. Require all C1-C4, K1-K3, "
             "R-1 to R-3, F1-F2, T1-T4, E1-E5 checks to be substantively justified. "
@@ -150,14 +262,16 @@ def stage_requirements(repo_root, state, issue):
         if not ajok:
             ok = False
             problems.append('A1 semantic validation: ' + ajreason)
+        persist()
         jok, jreason = judge(repo_root, usage,
                              "Every acceptance criterion in this spec is "
                              "testable: a developer who did not write it can "
                              "turn it into a pass/fail test.",
                              spec, stage=stage)
-        store_usage(state, usage)
+        persist()
         if ok and jok:
             state["a1_bundle_verified"] = True
+            clear_correction(repo_root, stage)
             write_transcript(repo_root, stage, transcript)
             controller.set_stage(state, stage, "passed", artifact=spec_path,
                                  summary=result.get("summary", ""))
@@ -165,6 +279,20 @@ def stage_requirements(repo_root, state, issue):
         problems = problems + ([f"judge: {jreason}"] if not jok else [])
         task = (original_task + "\nThe specification failed its checks. Read the existing spec.md, fix it, and finish."
                 "\nProblems:\n- " + "\n- ".join(problems))
+        if attempt < CORRECTION_MAX_ATTEMPTS:
+            save_correction(repo_root, {
+                "schema": CORRECTION_SCHEMA, "stage": stage,
+                "issue": issue["number"], "attempt": attempt + 1,
+                "task": task,
+                "original_task_sha256": _sha(original_task),
+                "system_sha256": _sha(system),
+                "harness_sha256": call_log.harness_digest()})
+    save_correction(repo_root, {
+        "schema": CORRECTION_SCHEMA, "stage": stage,
+        "issue": issue["number"], "attempt": CORRECTION_MAX_ATTEMPTS + 1,
+        "task": task, "original_task_sha256": _sha(original_task),
+        "system_sha256": _sha(system),
+        "harness_sha256": call_log.harness_digest(), "exhausted": True})
     write_transcript(repo_root, stage, transcript)
     return fail(repo_root, state, stage,
                 "checks failed after self-correction: " + "; ".join(problems),
