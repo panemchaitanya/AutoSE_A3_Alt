@@ -24,7 +24,8 @@ class TestingCoverage(unittest.TestCase):
             state['stages']['implementation']['status'] = 'passed'
             result = {'criteria_untestable': ['AC-2 needs a defined boundary'],
                       'tests_written': ['tests_autose/test_fixture.py'], 'all_pass': True}
-            with patch.object(run_stage.agent, 'run_agent', return_value=(result, [], None)), \
+            with patch.object(run_stage.subprocess, 'run', return_value=__import__('subprocess').CompletedProcess([],0,stdout='source diff',stderr='')), \
+                 patch.object(run_stage.agent, 'run_agent', return_value=(result, [], None)), \
                  patch.object(run_stage.checks, 'run_tests', return_value=(True, 'all tests pass', 'green subset')), \
                  patch.object(run_stage.checks, 'baseline_regression_check') as baseline:
                 self.assertFalse(run_stage.stage_develop(root, state, {'number': 3}))
