@@ -1,0 +1,12 @@
+[
+  {
+    "step": 0,
+    "role": "Tester",
+    "reply": "{\n  \"action\": \"run_shell\",\n  \"command\": \"python -m pytest tests_autose -q\"\n}"
+  },
+  {
+    "step": 1,
+    "role": "Tester",
+    "reply": "{\n  \"action\": \"finish\",\n  \"result\": {\n    \"all_pass\": true,\n    \"tests_written\": [\n      \"tests_autose/test_search_limit.py\"\n    ],\n    \"verdict\": \"pass\"\n  }\n}"
+  }
+]
