@@ -1,0 +1,3 @@
+# Stage requirements failed
+
+checks failed after self-correction: VALIDATION missing required topic: gate; VALIDATION missing required topic: human; VALIDATION lacks explicit PASS/FAIL/N/A result for R-1; VALIDATION lacks explicit PASS/FAIL/N/A result for R-2; VALIDATION lacks explicit PASS/FAIL/N/A result for R-3; VALIDATION lacks explicit PASS/FAIL/N/A result for T2; VALIDATION lacks explicit PASS/FAIL/N/A result for T3; VALIDATION lacks explicit PASS/FAIL/N/A result for E2; VALIDATION lacks explicit PASS/FAIL/N/A result for E3; VALIDATION lacks explicit PASS/FAIL/N/A result for E4; A1 semantic validation: A1 structural checks failed
