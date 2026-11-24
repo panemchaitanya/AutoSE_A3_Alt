@@ -1,0 +1,22 @@
+[
+  {
+    "step": 0,
+    "role": "SpecWriter",
+    "reply": "{\n  \"action\": \"run_shell\",\n  \"command\": \"git status\"\n}"
+  },
+  {
+    "step": 1,
+    "role": "SpecWriter",
+    "reply": "{\n  \"action\": \"run_shell\",\n  \"command\": \"find . -maxdepth 3 -not -path '*/.*'\"\n}"
+  },
+  {
+    "step": 2,
+    "role": "SpecWriter",
+    "reply": "{\"action\": \"run_shell\", \"command\": \"mkdir -p .autose/artifacts\"}"
+  },
+  {
+    "step": 3,
+    "role": "SpecWriter",
+    "reply": "{\n  \"action\": \"run_shell\",\n  \"command\": \"ls -la .autose/artifacts\"\n}"
+  }
+]
