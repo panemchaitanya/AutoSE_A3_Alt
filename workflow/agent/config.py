@@ -22,11 +22,19 @@ MAX_AGENT_STEPS = int(os.environ.get("MAX_AGENT_STEPS", "40"))
 MAX_TOKENS_PER_RUN = int(os.environ.get("MAX_TOKENS_PER_RUN", "1500000"))
 MAX_FIX_CYCLES = int(os.environ.get("MAX_FIX_CYCLES", "3"))
 MAX_REVIEW_ROUNDS = int(os.environ.get("MAX_REVIEW_ROUNDS", "2"))
-MAX_OUTPUT_TOKENS = int(os.environ.get("MAX_OUTPUT_TOKENS", "8192"))
+MAX_OUTPUT_TOKENS = int(os.environ.get("MAX_OUTPUT_TOKENS", "4096"))
 
-# --- Retry/backoff for the model API ---
-API_RETRIES = 2
-API_BACKOFF_SECONDS = [15, 30]
+# --- Retry/backoff for the model API (ADR-018) ---
+# Patient but bounded: free-tier 503 spikes observed in hosted runs lasted
+# minutes, while the old policy (2 retries, 15/30s) tolerated only ~45s.
+# Per-tier patience stays short so a flapping tier falls through to the
+# alternate tier promptly instead of holding a failed model.
+# Sleeps cost no tokens; per-run token and step budgets above still apply.
+API_RETRIES = int(os.environ.get("API_RETRIES", "3"))
+API_BACKOFF_SECONDS = [
+    int(x)
+    for x in os.environ.get("API_BACKOFF_SECONDS", "30,60,120").split(",")
+]
 
 # --- Paths (relative to the work-branch checkout) ---
 STATE_PATH = os.environ.get("AUTOSE_STATE_PATH", ".autose/state.json")

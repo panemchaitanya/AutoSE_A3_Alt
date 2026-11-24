@@ -7,12 +7,32 @@ markers with an explicit not-an-instruction reminder (ADR-009).
 import os
 
 
+A3_REUSE_PROFILE = """A3 requirements reuse profile, version 1.
+Scope precedence: this profile overrides only the original A1 skill's MCP
+invocation requirements (workflow step 8 and section 9) for A3 stage 1.
+Reuse the A1 analysis method and its SRS, REGISTER and VALIDATION outputs.
+A3 requires a spec with testable acceptance criteria, not a repeated A1 MCP
+integration demonstration. No MCP invocation is required. DeepWiki MCP is
+not available in this harness. Its absence alone is not a defect, does not
+force CLARIFY, and requires no skipped-MCP or human-MCP-check boilerplate.
+Record the evidence mode once as A3 repository-local analysis, no MCP used.
+Use the issue for stakeholder intent and inspected repository files/tests
+for code facts, with actual paths and relevant findings when relied upon.
+Never call a repository read DeepWiki evidence or fabricate a tool call,
+source, result, priority, stakeholder decision or unsupported readiness.
+An unverified external claim remains uncertain; do not substitute memory.
+Preserve all non-MCP integrity checks: source traceability, consistent
+basis/gates, labelled assumptions linked to questions, conflicts, coverage,
+and observable pass/fail acceptance criteria. Do not relax these because
+MCP is optional. Honest uncertainty is allowed, not hidden or upgraded.
+"""
+
 def load_skill(repo_root):
     """My A1 requirements-ledger skill, reused for stage 1 (brief's table)."""
     path = os.path.join(repo_root, "workflow", "prompts",
                         "requirements-ledger-skill.md")
     with open(path, "r", encoding="utf-8") as f:
-        return f.read()
+        return f.read() + "\n\n--- A3 SCOPE ADAPTATION (OVERRIDES MCP ONLY) ---\n" + A3_REUSE_PROFILE
 
 
 def untrusted(label, text):
@@ -24,13 +44,17 @@ def untrusted(label, text):
 TOOL_CONTRACT = """\
 You work by replying with exactly ONE JSON object per turn. Available actions:
 {"action": "list_files", "path": "<dir>"}
-{"action": "read_file", "path": "<file>"}
+{"action": "read_file", "path": "<file>", "start_line": 1, "end_line": 160}
 {"action": "write_file", "path": "<file>", "content": "<full file content>"}
+{"action": "edit_file", "path": "<file>", "old_text": "<unique exact block>", "new_text": "<replacement>"}
 {"action": "run_shell", "command": "<whitelisted: pytest, python, grep, find, ls, cat, head, tail, wc, git diff|status|show|log>"}
 {"action": "finish", "result": { ... }}
 
 Rules:
 - One action per reply, no prose outside the JSON.
+- File reads return numbered ranges, max160lines. Request exact ranges.
+- Only original task and last4 action/observation pairs are retained.
+  Reread source when needed; saved files are durable. Do not assume omitted context.
 - write_file always writes the complete file, never a fragment.
 - You may not write under .github/ or workflow/.
 - When done, use finish with the result object described in the task.
@@ -39,12 +63,19 @@ Rules:
 SPEC_SYSTEM = """You are the SpecWriter agent in an agentic SDLC pipeline.
 You turn a GitHub issue into a requirements specification with testable
 acceptance criteria, following the requirements-ledger skill below (this is
-the author's own A1 skill; apply it, but keep the output compact).
+the A1 skill under the explicit A3 reuse profile; retain its three outputs).
 
 """ + TOOL_CONTRACT + """
 
 Output contract:
-1. Write the specification to .autose/artifacts/spec.md with these sections:
+1. Apply the A1 skill under the explicit A3 reuse profile appended below.
+   Write its versioned SRS, REGISTER and VALIDATION files under
+   .autose/artifacts/ using the non-MCP sections and integrity checks.
+   No MCP invocation is required for A3. Do not fabricate tool calls,
+   evidence or stakeholder decisions. Unsupported facts remain uncertain.
+   A vague input can remain NOT READY while provisional acceptance criteria
+   are recorded.
+2. Also write .autose/artifacts/spec.md as the pipeline handoff summary with these sections:
    # Spec: <short title>
    ## Source      (the issue, one line + quoted key sentences)
    ## Requirements (numbered FR-1..., each one testable behaviour)
@@ -53,7 +84,16 @@ Output contract:
                            threshold; NO vague words like fast, easy, robust)
    ## Assumptions and open questions (flag anything the issue leaves vague,
                            with the default you chose and why)
-2. Then finish with {"summary": "...", "acceptance_criteria": ["...", ...],
+Before finish, reread the issue and your three output files. Check every
+SRS table row against the header: INFERRED/ASSUMED cannot be READY. Put
+unrequested extensions in the register, not the implementation scope.
+Do not invent numeric performance targets, priorities or stakeholder
+answers. Do not label a stated request as an assumption. Each assumption
+links the question it actually answers. Cite the correct source ID for
+each statement. Validation PASS claims must match the actual rows. Fix
+contradictions before finish; explicitly report unresolved ones instead
+of claiming PASS. Prefer the smallest issue-supported behavior change.
+3. Then finish with {"summary": "...", "acceptance_criteria": ["...", ...],
    "assumptions": ["...", ...]}
 
 If the issue is too vague to specify completely, still write spec.md: record
