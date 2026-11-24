@@ -14,6 +14,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import config
 import controller
+import review_feedback
 
 TRIGGER_LABEL = "autose"
 TRIGGER_COMMAND = "/autose"
@@ -113,8 +114,8 @@ def main():
         # Preserve completed artifacts/code, but execute the current reviewed
         # harness revision rather than a stale copy on the work branch.
         sh("git", "fetch", "origin", "main")
-        sh("git", "checkout", "origin/main", "--", "workflow/agent", "workflow/prompts")
-        sh("git", "add", "workflow/agent", "workflow/prompts")
+        sh("git", "checkout", "origin/main", "--", "workflow/agent", "workflow/prompts", "workflow/tests")
+        sh("git", "add", "workflow/agent", "workflow/prompts", "workflow/tests")
         state = controller.load_state(".")
         if state is None:
             return skip(f"no state on {branch}; cannot continue")
@@ -125,6 +126,14 @@ def main():
                 controller.record(state, "operational recovery: no reviewer verdict exists")
                 state["review_rounds"] = 0
         else:
+            # Fetch the posted review before creating the continuation commit.
+            # A retry must repair actual findings, not silently repeat the old task.
+            feedback = review_feedback.collect_review_feedback(gh_api, repo, branch)
+            review_feedback.save_feedback(".", feedback)
+            # The isolated review job cannot push state. Retain its actual
+            # verdict here so an operational resume cannot reset review rounds.
+            state["stages"]["review"]["verdict"] = "request_changes"
+            controller.record(state, f"review feedback recovered from {feedback['review_url']}")
             state["review_rounds"] = state.get("review_rounds", 0) + 1
             controller.entry_stage_for_continue(state,
                 "approach" if entry == "design" else "code")
@@ -133,7 +142,7 @@ def main():
     with open(".autose/issue.json", "w", encoding="utf-8") as f:
         json.dump(issue_json, f, indent=2)
     controller.save_state(".", state)
-    sh("git", "add", ".autose", "workflow/agent", "workflow/prompts")
+    sh("git", "add", ".autose", "workflow/agent", "workflow/prompts", "workflow/tests")
     sh("git", "-c", "user.name=autose-bot", "-c",
        "user.email=autose-bot@users.noreply.github.com",
        "commit", "-m", f"autose: gate ({'start' if entry is None else 'continue -> ' + entry}) for issue #{issue_number}",
