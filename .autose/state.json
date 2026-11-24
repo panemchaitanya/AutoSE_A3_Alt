@@ -1,4 +1,5 @@
 {
+  "a1_bundle_verified": true,
   "branch": "autose/issue-1",
   "fix_cycles": 0,
   "history": [
@@ -153,6 +154,18 @@
     {
       "event": "operational recovery: no reviewer verdict exists",
       "ts": "2026-11-24T09:30:49.272306+00:00"
+    },
+    {
+      "event": "A3-profile A1 validation required; downstream checkpoints invalidated",
+      "ts": "2026-11-24T09:30:56.853531+00:00"
+    },
+    {
+      "event": "requirements -> running",
+      "ts": "2026-11-24T09:30:56.853547+00:00"
+    },
+    {
+      "event": "requirements -> passed",
+      "ts": "2026-11-24T10:53:22.878802+00:00"
     }
   ],
   "issue": 1,
@@ -170,8 +183,8 @@
     "requirements": {
       "artifact": ".autose/artifacts/spec.md",
       "reason": "agent error: model retries exhausted; last error type=_Transient: Gemini API error 503: {\n  \"error\": {\n    \"code\": 503,\n    \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\",\n    \"status\": \"UNAVAILABLE\"\n  }\n}\n",
-      "status": "failed",
-      "summary": "Produced requirements specification for updating and removing documents using string IDs in TinyDB, ensuring consistency with get() behavior."
+      "status": "passed",
+      "summary": "Completed requirements specification, register, and validation artifacts for TinyDB issue #1 regarding string document IDs in update() and remove(), resolving all validation defects."
     },
     "review": {
       "status": "pending"
@@ -181,13 +194,14 @@
     }
   },
   "usage": {
-    "calls": 41,
-    "completion_tokens": 11275,
-    "fallbacks": 2,
+    "calls": 63,
+    "completion_tokens": 14766,
+    "fallbacks": 22,
     "models": {
-      "gemini-3.5-flash-lite": 6
+      "gemini-3.5-flash": 2,
+      "gemini-3.5-flash-lite": 26
     },
-    "prompt_tokens": 352629,
-    "total_tokens": 363904
+    "prompt_tokens": 514421,
+    "total_tokens": 529371
   }
 }

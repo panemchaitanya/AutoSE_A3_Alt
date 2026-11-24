@@ -1,0 +1,14 @@
+{
+  "stage": "requirements",
+  "attempt": 1,
+  "passed": false,
+  "problems": [
+    "VALIDATION missing required topic: gate",
+    "VALIDATION lacks explicit PASS/FAIL/N/A result for T2",
+    "VALIDATION lacks explicit PASS/FAIL/N/A result for T3",
+    "VALIDATION lacks explicit PASS/FAIL/N/A result for E2",
+    "VALIDATION lacks explicit PASS/FAIL/N/A result for E3",
+    "VALIDATION lacks explicit PASS/FAIL/N/A result for E4",
+    "A1 semantic validation: A1 structural checks failed"
+  ]
+}
