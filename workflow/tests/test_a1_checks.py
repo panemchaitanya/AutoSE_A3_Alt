@@ -66,3 +66,15 @@ class A1Checks(unittest.TestCase):
   src=(Path(__file__).resolve().parents[1]/'agent/run_stage.py').read_text()
   self.assertIn('prompts.A3_REUSE_PROFILE +',src)
   self.assertIn('Do not reject solely for absent MCP invocation',src)
+
+ def test_uncertain_ready_rejected_by_named_columns(self):
+  text='| ID | Gate | Basis | Source |\n|---|---|---|---|\n| FR-2 | **READY** | INFERRED | S-2 |\n| NFR-1 | CLARIFY | ASSUMED | Q-1 |'
+  errors=a1_checks.basis_gate_errors(text)
+  self.assertEqual(len(errors),1);self.assertIn('FR-2',errors[0])
+ def test_no_false_reject_for_clarify_or_quoted_words(self):
+  text='| ID | Statement | Basis | Gate |\n|---|---|---|---|\n| FR-1 | INFERRED READY as quoted text | STATED | READY |\n| FR-2 | optional behavior | INFERRED | CLARIFY |'
+  self.assertEqual(a1_checks.basis_gate_errors(text),[])
+ def test_generator_prefinish_consistency_guidance(self):
+  import prompts
+  self.assertIn('INFERRED/ASSUMED cannot be READY',prompts.SPEC_SYSTEM)
+  self.assertIn('Do not invent numeric performance targets',prompts.SPEC_SYSTEM)

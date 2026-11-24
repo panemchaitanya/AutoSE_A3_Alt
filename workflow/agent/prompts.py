@@ -84,6 +84,15 @@ Output contract:
                            threshold; NO vague words like fast, easy, robust)
    ## Assumptions and open questions (flag anything the issue leaves vague,
                            with the default you chose and why)
+Before finish, reread the issue and your three output files. Check every
+SRS table row against the header: INFERRED/ASSUMED cannot be READY. Put
+unrequested extensions in the register, not the implementation scope.
+Do not invent numeric performance targets, priorities or stakeholder
+answers. Do not label a stated request as an assumption. Each assumption
+links the question it actually answers. Cite the correct source ID for
+each statement. Validation PASS claims must match the actual rows. Fix
+contradictions before finish; explicitly report unresolved ones instead
+of claiming PASS. Prefer the smallest issue-supported behavior change.
 3. Then finish with {"summary": "...", "acceptance_criteria": ["...", ...],
    "assumptions": ["...", ...]}
 

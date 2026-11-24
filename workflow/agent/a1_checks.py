@@ -24,6 +24,26 @@ def _scan(root):
         found.setdefault(slug,{}).setdefault(ver,{})[kind]=path
     return found
 
+def basis_gate_errors(srs):
+    """Check explicit table cells only; semantic source judgement is separate."""
+    errors=[]; header=None
+    for line in srs.splitlines():
+        if not line.strip().startswith('|'):
+            header=None
+            continue
+        cells=[re.sub(r'[`*_]', '', c).strip() for c in line.strip().strip('|').split('|')]
+        lowered=[c.lower() for c in cells]
+        if 'basis' in lowered and 'gate' in lowered:
+            header=lowered
+            continue
+        if header is None or len(cells)!=len(header):
+            continue
+        row=dict(zip(header,cells))
+        if row.get('basis','').upper() in ('INFERRED','ASSUMED') and row.get('gate','').upper()=='READY':
+            errors.append('A1 basis/gate contradiction: '+row.get('id','unknown item')+
+                          ' is '+row['basis']+' but READY; retain uncertainty as CLARIFY/BLOCKED')
+    return errors
+
 def check_a1_bundle(root):
     errors=[];docs={}
     found=_scan(root)
@@ -59,4 +79,5 @@ def check_a1_bundle(root):
             errors.append(f'VALIDATION lacks explicit PASS/FAIL/N/A result for {key}')
     if not re.search(r'\b(?:READY|PARTIALLY READY|NOT READY)\b',val):errors.append('VALIDATION lacks readiness verdict')
     if docs.get('SRS') and not re.search(r'\bS-\d+',docs['SRS']):errors.append('SRS lacks source statement links')
+    errors += basis_gate_errors(docs.get('SRS',''))
     return not errors,errors,docs
