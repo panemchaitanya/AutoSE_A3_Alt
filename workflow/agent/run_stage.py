@@ -183,7 +183,7 @@ def stage_requirements(repo_root, state, issue):
     if not state.get("a1_bundle_verified"):
         for dependent in ("design", "implementation", "testing", "release", "review"):
             state["stages"][dependent] = {"status": "pending"}
-        controller.record(state, "Full A1 validation required; downstream checkpoints invalidated")
+        controller.record(state, "A3-profile A1 validation required; downstream checkpoints invalidated")
     controller.set_stage(state, stage, "running")
     usage = load_usage(state)
     skill = prompts.load_skill(repo_root)
@@ -225,6 +225,16 @@ def stage_requirements(repo_root, state, issue):
             "SpecWriter", config.MODEL_SPEC, system, task, repo_root, usage,
             stage=stage, on_progress=persist)
         persist()
+        # Every attempt's transcript is preserved under its own artifact
+        # name; later attempts never overwrite a prior attempt's record.
+        transcript_text = json.dumps(transcript, indent=2)[:200000]
+        transcript_id = _sha(transcript_text)[:16]
+        execution_id = os.environ.get("GITHUB_RUN_ID", "local")
+        execution_attempt = os.environ.get("GITHUB_RUN_ATTEMPT", "1")
+        write_artifact(repo_root,
+                       f"transcript_{stage}_attempt{attempt}_"
+                       f"{execution_id}_{execution_attempt}_{transcript_id}.json",
+                       transcript_text)
         if err:
             return fail(repo_root, state, stage,
                         f"agent error: {err}", transcript)
@@ -249,13 +259,14 @@ def stage_requirements(repo_root, state, issue):
         ok = ok and aok
         persist()
         ajok, ajreason = judge(repo_root, usage,
-            "Audit full A1 compliance, not just file presence. Require all C1-C4, K1-K3, "
+            prompts.A3_REUSE_PROFILE + "\nAudit A3-profile A1 compliance, not just file presence. Require all C1-C4, K1-K3, "
             "R-1 to R-3, F1-F2, T1-T4, E1-E5 checks to be substantively justified. "
             "Every requirement must link real source statements; ASSUMED/INFERRED items "
             "cannot be READY. No invented priorities, numbers or source evidence. "
             "Every ambiguity, question and conflict needs affected IDs/default provenance. "
             "Coverage topics must be covered/open/N-A with reason. Validation needs basis/gate "
-            "counts, tool outcomes and human next steps. Missing tools must remain explicit. "
+            "counts, actual tool outcomes and human next steps when needed. "
+            "Do not reject solely for absent MCP invocation or MCP-gap boilerplate. "
             "Reject unsupported readiness or superficial PASS claims. An honest NOT READY "
             "verdict can meet documentation integrity if uncertainty is kept explicit.",
             "\n\n".join(k+":\n"+v for k,v in adocs.items()), stage=stage) if aok else (False, 'A1 structural checks failed')

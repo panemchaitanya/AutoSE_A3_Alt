@@ -7,12 +7,32 @@ markers with an explicit not-an-instruction reminder (ADR-009).
 import os
 
 
+A3_REUSE_PROFILE = """A3 requirements reuse profile, version 1.
+Scope precedence: this profile overrides only the original A1 skill's MCP
+invocation requirements (workflow step 8 and section 9) for A3 stage 1.
+Reuse the A1 analysis method and its SRS, REGISTER and VALIDATION outputs.
+A3 requires a spec with testable acceptance criteria, not a repeated A1 MCP
+integration demonstration. No MCP invocation is required. DeepWiki MCP is
+not available in this harness. Its absence alone is not a defect, does not
+force CLARIFY, and requires no skipped-MCP or human-MCP-check boilerplate.
+Record the evidence mode once as A3 repository-local analysis, no MCP used.
+Use the issue for stakeholder intent and inspected repository files/tests
+for code facts, with actual paths and relevant findings when relied upon.
+Never call a repository read DeepWiki evidence or fabricate a tool call,
+source, result, priority, stakeholder decision or unsupported readiness.
+An unverified external claim remains uncertain; do not substitute memory.
+Preserve all non-MCP integrity checks: source traceability, consistent
+basis/gates, labelled assumptions linked to questions, conflicts, coverage,
+and observable pass/fail acceptance criteria. Do not relax these because
+MCP is optional. Honest uncertainty is allowed, not hidden or upgraded.
+"""
+
 def load_skill(repo_root):
     """My A1 requirements-ledger skill, reused for stage 1 (brief's table)."""
     path = os.path.join(repo_root, "workflow", "prompts",
                         "requirements-ledger-skill.md")
     with open(path, "r", encoding="utf-8") as f:
-        return f.read()
+        return f.read() + "\n\n--- A3 SCOPE ADAPTATION (OVERRIDES MCP ONLY) ---\n" + A3_REUSE_PROFILE
 
 
 def untrusted(label, text):
@@ -43,16 +63,18 @@ Rules:
 SPEC_SYSTEM = """You are the SpecWriter agent in an agentic SDLC pipeline.
 You turn a GitHub issue into a requirements specification with testable
 acceptance criteria, following the requirements-ledger skill below (this is
-the A1 skill; apply every required step and retain its three outputs).
+the A1 skill under the explicit A3 reuse profile; retain its three outputs).
 
 """ + TOOL_CONTRACT + """
 
 Output contract:
-1. Apply the full A1 skill. Write its versioned SRS, REGISTER and VALIDATION
-   files under .autose/artifacts/ using the required A1 sections and checks.
-   If evidence tools are unavailable, log that gap and keep dependent items
-   CLARIFY; never claim an unsupported external check. A vague input can
-   remain NOT READY while provisional acceptance criteria are recorded.
+1. Apply the A1 skill under the explicit A3 reuse profile appended below.
+   Write its versioned SRS, REGISTER and VALIDATION files under
+   .autose/artifacts/ using the non-MCP sections and integrity checks.
+   No MCP invocation is required for A3. Do not fabricate tool calls,
+   evidence or stakeholder decisions. Unsupported facts remain uncertain.
+   A vague input can remain NOT READY while provisional acceptance criteria
+   are recorded.
 2. Also write .autose/artifacts/spec.md as the pipeline handoff summary with these sections:
    # Spec: <short title>
    ## Source      (the issue, one line + quoted key sentences)
@@ -62,6 +84,15 @@ Output contract:
                            threshold; NO vague words like fast, easy, robust)
    ## Assumptions and open questions (flag anything the issue leaves vague,
                            with the default you chose and why)
+Before finish, reread the issue and your three output files. Check every
+SRS table row against the header: INFERRED/ASSUMED cannot be READY. Put
+unrequested extensions in the register, not the implementation scope.
+Do not invent numeric performance targets, priorities or stakeholder
+answers. Do not label a stated request as an assumption. Each assumption
+links the question it actually answers. Cite the correct source ID for
+each statement. Validation PASS claims must match the actual rows. Fix
+contradictions before finish; explicitly report unresolved ones instead
+of claiming PASS. Prefer the smallest issue-supported behavior change.
 3. Then finish with {"summary": "...", "acceptance_criteria": ["...", ...],
    "assumptions": ["...", ...]}
 
