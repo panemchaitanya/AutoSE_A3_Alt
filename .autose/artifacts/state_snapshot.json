@@ -1,0 +1,110 @@
+{
+  "branch": "autose/issue-2",
+  "fix_cycles": 0,
+  "history": [
+    {
+      "event": "run created",
+      "ts": "2026-11-23T12:44:12.457097+00:00"
+    },
+    {
+      "event": "triggered by panemchaitanya via workflow_dispatch",
+      "ts": "2026-11-23T12:44:12.457116+00:00"
+    },
+    {
+      "event": "fresh start supersedes e903738129e77cb26b4ba38fc87786109ce4e8a1",
+      "ts": "2026-11-23T12:44:12.457119+00:00"
+    },
+    {
+      "event": "requirements -> running",
+      "ts": "2026-11-23T12:44:29.387009+00:00"
+    },
+    {
+      "event": "requirements -> passed",
+      "ts": "2026-11-23T12:44:35.797134+00:00"
+    },
+    {
+      "event": "operational recovery: no reviewer verdict exists",
+      "ts": "2026-11-23T13:20:25.876322+00:00"
+    },
+    {
+      "event": "operational recovery: no reviewer verdict exists",
+      "ts": "2026-11-23T13:38:49.957409+00:00"
+    },
+    {
+      "event": "design -> running",
+      "ts": "2026-11-23T13:39:06.291244+00:00"
+    },
+    {
+      "event": "design -> passed",
+      "ts": "2026-11-23T13:39:41.924000+00:00"
+    },
+    {
+      "event": "implementation -> running",
+      "ts": "2026-11-23T13:39:56.871506+00:00"
+    },
+    {
+      "event": "implementation -> passed",
+      "ts": "2026-11-23T13:50:20.233839+00:00"
+    },
+    {
+      "event": "testing -> running",
+      "ts": "2026-11-23T13:50:20.236308+00:00"
+    },
+    {
+      "event": "testing -> passed",
+      "ts": "2026-11-23T13:51:37.383650+00:00"
+    },
+    {
+      "event": "operational recovery: no reviewer verdict exists",
+      "ts": "2026-11-24T11:12:56.839645+00:00"
+    },
+    {
+      "ts": "2026-11-24T11:13:11.198156+00:00",
+      "event": "A3-profile A1 validation required; downstream checkpoints invalidated"
+    },
+    {
+      "ts": "2026-11-24T11:13:11.198171+00:00",
+      "event": "requirements -> running"
+    },
+    {
+      "ts": "2026-11-24T12:14:37.407119+00:00",
+      "event": "requirements -> failed (agent error: model retries exhausted; last error type=_Transient: Gemini API error 503: {\n  \"error\": {\n    \"code\": 503,\n    \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\",\n    \"status\": \"UNAVAILABLE\"\n  }\n}\n)"
+    }
+  ],
+  "issue": 2,
+  "review_rounds": 0,
+  "stages": {
+    "design": {
+      "status": "pending"
+    },
+    "implementation": {
+      "status": "pending"
+    },
+    "release": {
+      "status": "pending"
+    },
+    "requirements": {
+      "artifact": ".autose/artifacts/spec.md",
+      "status": "failed",
+      "summary": "Produced the requirements specification for issue #2 in .autose/artifacts/spec.md, addressing increment, add, and subtract operations failing on missing fields with a KeyError.",
+      "reason": "agent error: model retries exhausted; last error type=_Transient: Gemini API error 503: {\n  \"error\": {\n    \"code\": 503,\n    \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\",\n    \"status\": \"UNAVAILABLE\"\n  }\n}\n"
+    },
+    "review": {
+      "status": "pending"
+    },
+    "testing": {
+      "status": "pending"
+    }
+  },
+  "usage": {
+    "prompt_tokens": 266500,
+    "completion_tokens": 22957,
+    "total_tokens": 289843,
+    "calls": 47,
+    "fallbacks": 18,
+    "models": {
+      "gemini-3.5-flash": 2,
+      "gemini-3.5-flash-lite": 14
+    }
+  }
+}

@@ -1,0 +1,42 @@
+[
+  {
+    "step": 0,
+    "role": "SpecWriter",
+    "reply": "{\n  \"action\": \"list_files\",\n  \"path\": \".autose/artifacts\"\n}"
+  },
+  {
+    "step": 1,
+    "role": "SpecWriter",
+    "reply": "{\n  \"action\": \"read_file\",\n  \"path\": \".autose/artifacts/tinydb_VALIDATION_v1.md\",\n  \"start_line\": 100\n}"
+  },
+  {
+    "step": 2,
+    "role": "SpecWriter",
+    "reply": "{\n  \"action\": \"read_file\",\n  \"path\": \".autose/artifacts/tinydb_VALIDATION_v1.md\",\n  \"end_line\": 32,\n  \"start_line\": 1\n}"
+  },
+  {
+    "step": 3,
+    "role": "SpecWriter",
+    "reply": "{\"action\": \"read_file\", \"path\": \".autose/artifacts/tinydb_SRS_v1.md\", \"start_line\": 100}"
+  },
+  {
+    "step": 4,
+    "role": "SpecWriter",
+    "reply": "{\"action\": \"read_file\", \"path\": \".autose/artifacts/tinydb_SRS_v1.md\", \"start_line\": 100}"
+  },
+  {
+    "step": 5,
+    "role": "SpecWriter",
+    "reply": "{\n  \"action\": \"read_file\",\n  \"path\": \".autose/artifacts/tinydb_SRS_v1.md\",\n  \"end_line\": 54,\n  \"start_line\": 1\n}"
+  },
+  {
+    "step": 6,
+    "role": "SpecWriter",
+    "reply": "{\"action\": \"list_files\", \"path\": \".autose/artifacts\"}"
+  },
+  {
+    "step": 7,
+    "role": "SpecWriter",
+    "reply": "{\n  \"action\": \"read_file\",\n  \"path\": \".autose/artifacts/tinydb_VALIDATION_v1.md\",\n  \"end_line\": 100,\n  \"start_line\": 1\n}"
+  }
+]
