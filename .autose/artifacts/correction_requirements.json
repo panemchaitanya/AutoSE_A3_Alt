@@ -1,5 +1,6 @@
 {
-  "attempt": 2,
+  "attempt": 3,
+  "exhausted": true,
   "harness_sha256": "b4e9a660d268bf6380d5237ab461d3d0349fda56971ea903f9d4e7238ccf628c",
   "issue": 2,
   "original_task_sha256": "9aa6a6a304bd508c2e3b8a22855fe7c2266cd046f00e937b9e7f9317a994c75c",
