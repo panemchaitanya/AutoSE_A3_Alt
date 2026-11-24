@@ -164,3 +164,12 @@ The report, README and checkpoint state known gaps explicitly. They must not be 
 An AI coding assistant contributed substantially to the workflow, prompts, architecture, ADRs, experiments and report. The student discussed selected design decisions and endorsed selected rationales; other explanations remain AI-drafted. This disclosure does not claim unaided authorship or that every course authorship requirement is met. See the report and decision records for limitations.
 
 The upstream project license remains in [LICENSE](LICENSE). For TinyDB's own API, contribution process and documentation, use [README.rst](README.rst) and [CONTRIBUTING.rst](CONTRIBUTING.rst).
+
+### A3 requirements reuse scope (late work)
+A3 stage 1 reuses the original A1 requirements-ledger analysis and its three
+outputs under an explicit A3 profile. The original skill is preserved.
+A3 does not repeat A1's MCP integration demonstration: repository-local
+analysis and no MCP use are stated honestly, while traceability, labelled
+assumptions, consistent gates and testable acceptance criteria remain checked.
+See [ADR-020](architecture/decisions/ADR-020.md). This does not change or erase
+previous failed runs and does not reset exhausted correction attempts.

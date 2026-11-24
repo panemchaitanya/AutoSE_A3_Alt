@@ -45,11 +45,24 @@ class A1Checks(unittest.TestCase):
    self.assertTrue(any('REGISTER missing for selected bundle x v2' in e for e in errors))
    self.assertTrue(any('VALIDATION missing for selected bundle x v2' in e for e in errors))
    self.assertEqual(docs,{})
- def test_deepwiki_gap_disclosure_in_prompt(self):
-  import prompts,re as _re
-  flat=_re.sub(r'\s+',' ',prompts.SPEC_SYSTEM)
-  self.assertIn('DeepWiki MCP',flat)
-  self.assertIn('NOT available in this harness',flat)
-  self.assertIn('evidence unavailable',flat)
-  self.assertIn('never describe a repository file read as DeepWiki evidence',flat)
-  self.assertIn('Do not fabricate tool calls',flat)
+ def test_a3_profile_excludes_mcp_only_not_integrity(self):
+  import prompts
+  profile=prompts.A3_REUSE_PROFILE
+  self.assertIn('No MCP invocation is required',profile)
+  self.assertIn('does not\nforce CLARIFY',profile)
+  self.assertIn('source traceability',profile)
+  self.assertIn('labelled assumptions linked to questions',profile)
+  self.assertIn('fabricate a tool call',profile)
+  self.assertIn('No MCP invocation is required for A3',prompts.SPEC_SYSTEM)
+ def test_a3_profile_appended_without_mutating_original_skill(self):
+  import prompts
+  repo=Path(__file__).resolve().parents[2]
+  original=(repo/'workflow/prompts/requirements-ledger-skill.md').read_text()
+  effective=prompts.load_skill(str(repo))
+  self.assertTrue(effective.startswith(original))
+  self.assertTrue(effective.endswith(prompts.A3_REUSE_PROFILE))
+  self.assertIn('call the MCP tool',original)
+ def test_judge_uses_same_profile(self):
+  src=(Path(__file__).resolve().parents[1]/'agent/run_stage.py').read_text()
+  self.assertIn('prompts.A3_REUSE_PROFILE +',src)
+  self.assertIn('Do not reject solely for absent MCP invocation',src)
